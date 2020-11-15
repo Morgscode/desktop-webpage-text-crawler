@@ -2,33 +2,19 @@
 # This script will index all of the text content on webapges found within the NAV element of a website
 # pass the website you want to index in the target_url variable on line 15
 
-import ssl
 import sys
-import os
 
 from urllib.request import urlopen, URLError
 from urllib.error import HTTPError
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
-# this will be the url which will evetually be given by the gui
-target_url = "https://kumi-solutions.com"
-
-# we need to set the deafult sll context to 'unverified'
-# not okay for production code!!!
-ssl._create_default_https_context = ssl._create_unverified_context
-
-# let's create a directory for logs
-if not os.path.exists('./web-scraper-logs'):
-    os.makedirs('./web-scraper-logs')
-
 
 def validate_web_url(url: str):
     # let's define a function to validate a url
     # on fail, we'll write to logs and exit
-    global target_url
     try:
-        urlopen(target_url)
+        urlopen(url)
         return True
     except URLError as e:
         error = "Web-scraper error at line 29... error reason is: {errreason}\n".format(
@@ -37,16 +23,6 @@ def validate_web_url(url: str):
         error_file.write(error)
         error_file.close()
         sys.exit("invalid url at line 20! shutting down...")
-
-
-validate_web_url(target_url)
-
-# if validation passes, parse the url
-parsed_target_url = urlparse(target_url)
-
-# let's create a directory for data
-if not os.path.exists('./web-scraper-data/' + str(parsed_target_url.netloc)):
-    os.makedirs('./web-scraper-data/' + str(parsed_target_url.netloc))
 
 
 def get_webpage_html(url: str):
@@ -66,9 +42,7 @@ def get_webpage_html(url: str):
         return html
 
 
-def convert_html_to_soup_obj(html):
-    global target_url
-
+def convert_html_to_soup_obj(html, target_url):
     if html is None:
         print('There was no data found at that url')
         error = "There was no data found at " + str(target_url) + "\n"
@@ -124,8 +98,7 @@ def format_path(link: str):
     return file_path
 
 
-def write_text_to_file(web_page_text: str, formatted_path: str,  counter: int):
-    global parsed_target_url
+def write_text_to_file(web_page_text: str, formatted_path: str,  counter: int, parsed_target_url: str):
     text_file_location = "./web-scraper-data/{domain}/{pgindex}_{fmtdpath}.txt".format(
         domain=parsed_target_url.netloc, pgindex=str(counter), fmtdpath=formatted_path)
     # lets open/create a new file called in the website data directory and overwrite its contents if its been indexed before
@@ -153,31 +126,3 @@ def strip_whitespace_from_file(text_file: str):
     formatted_text_content = "\n".join(stripped_text)
 
     return formatted_text_content
-
-    # let's get the url as html
-html = get_webpage_html(target_url)
-
-if html is None:
-    # if the url opens, but there is no response, exit
-    sys.exit('invalid domain given! check the logs....')
-
-# convert into beautifulsoup object
-html_soup = convert_html_to_soup_obj(html)
-
-# let's extract the links in the nav element
-webpage_links = get_webpage_links_in_nav(html_soup)
-
-# we'll use enumerate to generate an scope specific index
-# this is used in the write file functions
-for index, link in enumerate(webpage_links):
-    page_html = get_webpage_html(link)
-    page_html_soup = convert_html_to_soup_obj(page_html)
-    page_html_text_content = convert_soup_to_text(page_html_soup)
-    formatted_path = format_path(link)
-    new_file_loaction = write_text_to_file(
-        page_html_text_content, formatted_path, index)
-    formatted_text = strip_whitespace_from_file(new_file_loaction)
-    write_text_to_file(formatted_text, formatted_path, index)
-
-# bye :)
-sys.exit('done scraping! going to sleep now....')
