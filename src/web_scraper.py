@@ -47,9 +47,12 @@ def convert_html_to_soup_obj(html, target_url):
 
 def get_webpage_links_in_nav(html: BeautifulSoup):
     links = []
+
     for link in html.nav.find_all('a'):
         page_link = link.get('href')
-        links.append(page_link)
+
+        if page_link != "#":
+            links.append(page_link)
 
     return links
 

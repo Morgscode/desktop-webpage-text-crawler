@@ -61,27 +61,27 @@ def grab_webpage_content():
         # we'll use enumerate to generate an scope specific index
         # this is used in the write file functions
         for index, link in enumerate(webpage_links):
-            if link != "#":
-                page_html = web_scraper.get_webpage_html(link)
 
-                page_html_soup = web_scraper.convert_html_to_soup_obj(
-                    page_html, target_url)
+            page_html = web_scraper.get_webpage_html(link)
 
-                page_html_text_content = web_scraper.convert_soup_to_text(
-                    page_html_soup)
+            page_html_soup = web_scraper.convert_html_to_soup_obj(
+                page_html, target_url)
 
-                formatted_path = location_handler.format_path(link)
+            page_html_text_content = web_scraper.convert_soup_to_text(
+                page_html_soup)
 
-                new_file_loaction = file_handler.write_text_to_file(
-                    page_html_text_content, formatted_path, index, parsed_target_url)
+            formatted_path = location_handler.format_path(link)
 
-                formatted_text = file_handler.strip_whitespace_from_file(
-                    new_file_loaction)
+            new_file_loaction = file_handler.write_text_to_file(
+                page_html_text_content, formatted_path, index, parsed_target_url)
 
-                file_handler.write_text_to_file(
-                    formatted_text, formatted_path, index, parsed_target_url)
+            formatted_text = file_handler.strip_whitespace_from_file(
+                new_file_loaction)
 
-                domain_entry.delete(0, 'end')
+            file_handler.write_text_to_file(
+                formatted_text, formatted_path, index, parsed_target_url)
+
+            domain_entry.delete(0, 'end')
     except:
         print('there was a problem somewhere!')
 
