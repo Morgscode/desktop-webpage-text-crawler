@@ -1,3 +1,5 @@
 web-scraper-data/
 web-scraper-logs/
 .vscode/
+dist/
+build/
