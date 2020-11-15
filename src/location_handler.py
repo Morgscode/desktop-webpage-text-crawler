@@ -24,7 +24,7 @@ def format_path(link: str):
     file_path = parsed_url.path
 
     # let's check to see if there is a path, or if the path is a backslash and rename it index
-    if file_path == "/" or not file_path:
+    if file_path == "/" or file_path == "" or not file_path:
         file_path = "index"
 
     # next we need to strip away any trailing slashes
