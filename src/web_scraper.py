@@ -27,22 +27,14 @@ def get_webpage_html(url: str):
         return html
 
 
-def convert_html_to_soup_obj(html, target_url):
-    if html is None:
-        print('There was no data found at that url')
-        error = "There was no data found at " + str(target_url) + "\n"
-        error_file = open("./web-scraper-logs/error.txt", "a")
-        error_file.write(error)
-        error_file.close()
-        return
-    else:
-        # lets store the html as a utf-8 encoded string
-        html_string = html.read().decode('utf-8')
+def convert_html_to_soup_obj(html):
+    # lets store the html as a utf-8 encoded string
+    html_string = html.read().decode('utf-8')
 
-        # let's parse the html into an object with BeautifulSoup
-        html_soup = BeautifulSoup(html_string, 'html.parser')
+    # let's parse the html into an object with BeautifulSoup
+    html_soup = BeautifulSoup(html_string, 'html.parser')
 
-        return html_soup
+    return html_soup
 
 
 def get_webpage_links_in_nav(html: BeautifulSoup):

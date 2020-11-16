@@ -5,10 +5,11 @@ name = "pypi"
 
 [packages]
 beautifulsoup4 = "*"
-pyinstaller = "*"
+
 
 [dev-packages]
 autopep8 = "*"
+pyinstaller = "*"
 
 [requires]
 python_version = "3.9"
