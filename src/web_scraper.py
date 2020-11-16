@@ -40,12 +40,17 @@ def convert_html_to_soup_obj(html):
 def get_webpage_links_in_nav(html: BeautifulSoup):
     links = []
 
-    for link in html.nav.find_all('a'):
-        page_link = link.get('href')
+    # we need to asses if the page has a nav before we can look for links
+    nav = html.find('nav')
 
-        if page_link != "#":
-            links.append(page_link)
-
+    if nav:
+        # let's get the href of every link
+        for link in html.nav.find_all('a'):
+            page_link = link.get('href')
+            # let's only push urls
+            if page_link != "#":
+                links.append(page_link)
+    # we'll return either an empty, or filled list
     return links
 
 

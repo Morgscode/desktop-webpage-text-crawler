@@ -75,13 +75,13 @@ def grab_webpage_content():
         # let's extract the links in the nav element
         webpage_links = web_scraper.get_webpage_links_in_nav(html_soup)
 
-        if webpage_links:
+        if len(webpage_links) > 0:
             # we'll use enumerate to generate an scope specific index
             # this is used in the write file functions
             for index, link in enumerate(webpage_links):
                 index_webpage_content_by_url(link, index)
-
         else:
+            # if there are no links in a nav, just index the content on that page
             index_webpage_content_by_url(target_url, 0)
 
     except:
@@ -90,6 +90,7 @@ def grab_webpage_content():
     domain_entry.delete(0, 'end')
 
 
+# lets build the gui
 window = Tk()
 
 window.title('Webpage content scraper')
