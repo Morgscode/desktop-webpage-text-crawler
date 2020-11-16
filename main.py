@@ -11,8 +11,6 @@ from urllib.parse import urlparse
 
 from tkinter import *
 
-# button function
-
 
 def retrieve_and_parse_url():
     target_url = domain.get()
@@ -69,7 +67,7 @@ def grab_webpage_content():
 
         if html is None:
             # if the url opens, but there is no response, exit
-            sys.exit('invalid domain given! check the logs....')
+            sys.exit('there was a problem indexing that url! check the logs....')
 
         # convert into beautifulsoup object
         html_soup = web_scraper.convert_html_to_soup_obj(html)
@@ -77,10 +75,14 @@ def grab_webpage_content():
         # let's extract the links in the nav element
         webpage_links = web_scraper.get_webpage_links_in_nav(html_soup)
 
-        # we'll use enumerate to generate an scope specific index
-        # this is used in the write file functions
-        for index, link in enumerate(webpage_links):
-            index_webpage_content_by_url(link, index)
+        if webpage_links:
+            # we'll use enumerate to generate an scope specific index
+            # this is used in the write file functions
+            for index, link in enumerate(webpage_links):
+                index_webpage_content_by_url(link, index)
+
+        else:
+            index_webpage_content_by_url(target_url, 0)
 
     except:
         print('there was a problem somewhere!')
