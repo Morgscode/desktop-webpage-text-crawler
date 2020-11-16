@@ -58,7 +58,6 @@ def index_webpage_content_by_url(link, index):
 
 def grab_webpage_content():
     init()
-
     try:
         target_url = domain.get()
 
