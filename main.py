@@ -106,11 +106,13 @@ domain_label.grid(row=1, column=0, sticky=W)
 # website text field
 domain_entry = Entry(window, textvariable=domain)
 domain_entry.grid(row=2, column=0, ipady=5, ipadx=5)
+
 # button
 crawl_button = Button(window, text="Get website content",
                       font=14, command=grab_webpage_content)
 crawl_button.grid(row=3, column=0, pady=10, ipadx=12, ipady=7)
 
+# run the gui
 window.mainloop()
 
 # bye :)
