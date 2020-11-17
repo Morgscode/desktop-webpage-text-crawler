@@ -79,6 +79,8 @@ def grab_webpage_content():
             # this is used in the write file functions
             for index, link in enumerate(webpage_links):
                 index_webpage_content_by_url(link, index)
+
+            print('done scraping!... ready for more')
         else:
             # if there are no links in a nav, just index the content on that page
             index_webpage_content_by_url(target_url, 0)

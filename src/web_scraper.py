@@ -19,9 +19,11 @@ def get_webpage_html(url: str):
         # if it fails, let's encode our error as a string and write it to the logs
         error = "Web-scraper error at line 52... error code is: {errcode}; error reason is: {errreason}\n".format(
             errcode=e.code, errreason=e.reason)
-        error_file = open("./web-scraper-logs/error.txt", "a+")
-        error_file.write(error)
-        error_file.close()
+
+        with open("./web-scraper-logs/error.txt", "a+") as error_file:
+
+            error_file.write(error)
+
         return false
     else:
         return html
