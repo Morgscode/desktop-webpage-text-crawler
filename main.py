@@ -5,7 +5,7 @@ import src.location_handler as location_handler
 import src.web_scraper as web_scraper
 import src.file_handler as file_handler
 
-from urllib.request import urlopen, URLError
+from urllib.request import urlopen
 from urllib.error import HTTPError
 from urllib.parse import urlparse
 
@@ -14,9 +14,15 @@ from tkinter import *
 
 def retrieve_and_parse_url():
     target_url = domain.get()
-    parsed_target_url = urlparse(target_url)
+    try:
+        parsed_target_url = urlparse(target_url)
+        return parsed_target_url
+    except HTTPError as e:
+        error = "Web-scraper in init fn... ECODE: {errcode} error reason is: {errreason}\n".format(
+            errcode=e.code, errreason=e.reason)
+        with open("./web-scraper-logs/error.txt", "a+") as error_file:
 
-    return parsed_target_url
+            error_file.write(error)
 
 
 def init():
@@ -34,29 +40,40 @@ def init():
 
 
 def index_webpage_content_by_url(link, index):
+
+    # let's grab the html response from the server
     page_html = web_scraper.get_webpage_html(link)
 
+    # let's conver it to some tasty soup
     page_html_soup = web_scraper.convert_html_to_soup_obj(
         page_html)
 
+    # extract the text from this page
     page_html_text_content = web_scraper.convert_soup_to_text(
         page_html_soup)
 
+    # let's generate a formatted path for this webpage
     formatted_path = location_handler.format_path(link)
 
+    # we'll also need a parse version of the full url
     parsed_target_url = retrieve_and_parse_url()
 
+    # let's write the retieved text to a file and get it's location
+    # the index will be 0 or more, this will order the files
     new_file_loaction = file_handler.write_text_to_file(
         page_html_text_content, formatted_path, index, parsed_target_url)
 
+    # let's strip all of the unneede whitespace, and tidy it up
     formatted_text = file_handler.strip_whitespace_from_file(
         new_file_loaction)
 
+    # let's rewrite the cleaned text to the file
     file_handler.write_text_to_file(
         formatted_text, formatted_path, index, parsed_target_url)
 
 
 def grab_webpage_content():
+
     init()
     try:
         target_url = domain.get()
@@ -65,8 +82,9 @@ def grab_webpage_content():
         html = web_scraper.get_webpage_html(target_url)
 
         if html is None:
-            # if the url opens, but there is no response, exit
-            sys.exit('there was a problem indexing that url! check the logs....')
+            domain_entry.delete(0, 'end')
+            # if the url opens, but there is no response, bail
+            return False
 
         # convert into beautifulsoup object
         html_soup = web_scraper.convert_html_to_soup_obj(html)
