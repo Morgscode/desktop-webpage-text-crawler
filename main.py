@@ -5,7 +5,7 @@ import src.location_handler as location_handler
 import src.web_scraper as web_scraper
 import src.file_handler as file_handler
 
-from urllib.request import urlopen, URLError
+from urllib.request import urlopen
 from urllib.error import HTTPError
 from urllib.parse import urlparse
 
@@ -14,9 +14,17 @@ from tkinter import *
 
 def retrieve_and_parse_url():
     target_url = domain.get()
-    parsed_target_url = urlparse(target_url)
+    try:
+        parsed_target_url = urlparse(target_url)
+        return parsed_target_url
+    except HTTPError as e:
+        error = "Web-scraper in init fn... ECODE: {errcode} error reason is: {errreason}\n".format(
+            errcode=e.code, errreason=e.reason)
+        with open("./web-scraper-logs/error.txt", "a+") as error_file:
 
-    return parsed_target_url
+            error_file.write(error)
+
+        sys.exit("invalid url passed! shutting down...")
 
 
 def init():
@@ -57,6 +65,7 @@ def index_webpage_content_by_url(link, index):
 
 
 def grab_webpage_content():
+
     init()
     try:
         target_url = domain.get()
@@ -65,8 +74,9 @@ def grab_webpage_content():
         html = web_scraper.get_webpage_html(target_url)
 
         if html is None:
+            domain_entry.delete(0, 'end')
             # if the url opens, but there is no response, exit
-            sys.exit('there was a problem indexing that url! check the logs....')
+            return False
 
         # convert into beautifulsoup object
         html_soup = web_scraper.convert_html_to_soup_obj(html)

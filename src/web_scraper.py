@@ -4,7 +4,7 @@
 
 import sys
 
-from urllib.request import urlopen, URLError
+from urllib.request import urlopen
 from urllib.error import HTTPError
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
@@ -17,7 +17,7 @@ def get_webpage_html(url: str):
     except HTTPError as e:
         print(e)
         # if it fails, let's encode our error as a string and write it to the logs
-        error = "Web-scraper error at line 52... error code is: {errcode}; error reason is: {errreason}\n".format(
+        error = "Web-scraper error in get_webpage_page_html fn... error code is: {errcode}; error reason is: {errreason}\n".format(
             errcode=e.code, errreason=e.reason)
 
         with open("./web-scraper-logs/error.txt", "a+") as error_file:
@@ -30,6 +30,7 @@ def get_webpage_html(url: str):
 
 
 def convert_html_to_soup_obj(html):
+
     # lets store the html as a utf-8 encoded string
     html_string = html.read().decode('utf-8')
 

@@ -1,6 +1,7 @@
 import sys
 
-from urllib.request import urlopen, URLError
+from urllib.request import urlopen
+from urllib.error import HTTPError
 from urllib.parse import urlparse
 
 
@@ -9,15 +10,15 @@ def validate_web_url(url: str):
     try:
         urlopen(url)
         return True
-    except URLError as e:
+    except HTTPError as e:
         # on fail, we'll write to logs and exit
-        error = "Web-scraper error at line 29... error reason is: {errreason}\n".format(
-            errreason=e.reason)
+        error = "Web-scraper error in vaidate_web_url fn... ECODE: {errcode} error reason is: {errreason}\n".format(
+            errcode=e.code, errreason=e.reason)
+
         with open("./web-scraper-logs/error.txt", "a+") as error_file:
 
             error_file.write(error)
-
-        sys.exit("invalid url passed! shutting down...")
+        return False
 
 
 def format_path(link: str):
