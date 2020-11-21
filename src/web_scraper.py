@@ -3,6 +3,7 @@
 # pass the website you want to index in the target_url variable on line 15
 
 import sys
+import re
 
 from urllib.request import urlopen
 from urllib.error import HTTPError
@@ -57,9 +58,17 @@ def get_webpage_links_in_navs(html: BeautifulSoup):
             # let's get the href of every link
             for link in nav.find_all('a'):
                 page_link = link.get('href')
-                # let's only push urls that are valid, and havn't been indexed in this fn
-                if page_link != "#" and page_link not in links:
-                    links.append(page_link)
+
+                if page_link not in links:
+                    print(page_link)
+                    # let's only push urls that are valid, and havn't been indexed in this fn
+                    # this regexp will pick up 'tel:, mailto: and #' hrefs
+                    page_link_regexp = re.compile(
+                        r'((mailto:|tel:)([A-z]+|[0-9])+|#|)')
+                    mo = page_link_regexp.search(page_link)
+
+                    if mo is None:
+                        links.append(page_link)
     # we'll return either an empty, or filled list
     return links
 
