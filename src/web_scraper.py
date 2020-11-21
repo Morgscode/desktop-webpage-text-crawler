@@ -45,16 +45,18 @@ def get_webpage_links_in_nav(html: BeautifulSoup):
     links = []
 
     # we need to asses if the page has a nav before we can look for links
-    nav = html.find('nav')
+    navs = html.find_all('nav')
 
-    if nav:
-        # let's get the href of every link
-        for link in html.nav.find_all('a'):
-            page_link = link.get('href')
-            # let's only push urls
-            if page_link != "#":
-                links.append(page_link)
-    # we'll return either an empty, or filled list
+    if navs:
+
+        for nav in navs:
+            # let's get the href of every link
+            for link in nav.find_all('a'):
+                page_link = link.get('href')
+                # let's only push urls that are valid, and havn't been indexed in this fn
+                if page_link != "#" and page_link not in links:
+                    links.append(page_link)
+                # we'll return either an empty, or filled list
     return links
 
 

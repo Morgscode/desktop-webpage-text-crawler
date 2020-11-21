@@ -92,40 +92,33 @@ def grab_webpage_content():
 
     if has_initialized:
 
-        try:
-            target_url = domain.get()
+        target_url = domain.get()
 
-            # let's get the url as html
-            html = web_scraper.get_webpage_html(target_url)
+        # let's get the url as html
+        html = web_scraper.get_webpage_html(target_url)
 
-            if html is None:
-                domain_entry.delete(0, 'end')
-                # if the url opens, but there is no response, bail
-                return False
+        if html is None:
+            domain_entry.delete(0, 'end')
+            # if the url opens, but there is no response, bail
+            return False
+        else:
+            # convert into beautifulsoup object
+            html_soup = web_scraper.convert_html_to_soup_obj(html)
+
+            # let's extract the links in the nav element
+            webpage_links = web_scraper.get_webpage_links_in_nav(html_soup)
+
+            if len(webpage_links) > 0:
+                # we'll use enumerate to generate an scope specific index
+                # this is used in the write file functions
+                for index, link in enumerate(webpage_links):
+                    index_webpage_content_by_url(link, index)
+
+                print('done scraping!... ready for more')
             else:
-                # convert into beautifulsoup object
-                html_soup = web_scraper.convert_html_to_soup_obj(html)
+                # if there are no links in a nav, just index the content on that page
+                index_webpage_content_by_url(target_url, 0)
 
-                # let's extract the links in the nav element
-                webpage_links = web_scraper.get_webpage_links_in_nav(html_soup)
-
-                if len(webpage_links) > 0:
-                    # we'll use enumerate to generate an scope specific index
-                    # this is used in the write file functions
-                    for index, link in enumerate(webpage_links):
-                        index_webpage_content_by_url(link, index)
-
-                    print('done scraping!... ready for more')
-                else:
-                    # if there are no links in a nav, just index the content on that page
-                    index_webpage_content_by_url(target_url, 0)
-
-        except:
-            print('there was a problem somewhere!')
-
-        domain_entry.delete(0, 'end')
-
-    else:
         domain_entry.delete(0, 'end')
 
 
