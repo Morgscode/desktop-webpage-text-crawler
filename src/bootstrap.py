@@ -9,11 +9,14 @@ def set_ssl_context():
     ssl._create_default_https_context = ssl._create_unverified_context
 
 
-def setup_file_system(parsed_target_url):
-    # let's create a directory for logs
-    if not os.path.exists('./web-scraper-logs'):
-        os.makedirs('./web-scraper-logs')
+def setup_data_directory(parsed_target_url):
 
     # let's create a directory for data
     if not os.path.exists('./web-scraper-data/' + str(parsed_target_url.netloc)):
         os.makedirs('./web-scraper-data/' + str(parsed_target_url.netloc))
+
+
+def setup_error_logs():
+    # let's create a directory for logs
+    if not os.path.exists('./web-scraper-logs'):
+        os.makedirs('./web-scraper-logs')

@@ -7,6 +7,7 @@ import sys
 from urllib.request import urlopen
 from urllib.error import HTTPError
 from urllib.parse import urlparse
+from http.client import HTTPResponse
 from bs4 import BeautifulSoup
 
 
@@ -29,7 +30,7 @@ def get_webpage_html(url: str):
         return html
 
 
-def convert_html_to_soup_obj(html):
+def convert_html_to_soup_obj(html: HTTPResponse):
 
     # lets store the html as a utf-8 encoded string
     html_string = html.read().decode('utf-8')
