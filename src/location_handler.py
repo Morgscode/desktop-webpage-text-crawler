@@ -9,10 +9,6 @@ def validate_web_url(url: str):
     # let's define a function to validate a url
     try:
         response = urlopen(url)
-
-        if response:
-            return True
-
     except HTTPError as e:
         # this will catch 404s, 500s etc, we'll write to logs and exit
         error = "Web-scraper error in vaidate_web_url fn... ECODE: {errcode} error reason is: {errreason}\n".format(
@@ -22,6 +18,8 @@ def validate_web_url(url: str):
 
             error_file.write(error)
         return False
+    else:
+        return True
 
 
 def format_path(link: str):
