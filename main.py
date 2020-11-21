@@ -21,12 +21,12 @@ def retrieve_and_parse_url():
 def validate_domain_or_fail(url: str):
     try:
         # let's run it through our validation function
-        location_handler.validate_web_url(target_url)
+        location_handler.validate_web_url(url)
 
     except:
         # this will catch invalid domains, we'll write to logs and return false
-        error = "Web-scraper error in validate_domain_or_fail fn...the domain: {target_url} is NOT valid\n".format(
-            target_url=target_url)
+        error = "Web-scraper error in main.py: validate_domain_or_fail fn...the domain: {target_url} is NOT valid\n".format(
+            target_url=url)
 
         with open("./web-scraper-logs/error.txt", "a+") as error_file:
 
@@ -35,10 +35,6 @@ def validate_domain_or_fail(url: str):
         domain_entry.delete(0, 'end')
         return False
     else:
-        # if validation passes, parse the url
-        parsed_target_url = urlparse(target_url)
-        # create a directory for the data
-        bootstrap.setup_data_directory(parsed_target_url)
         return True
 
 
@@ -50,6 +46,12 @@ def init():
     bootstrap.set_ssl_context()
 
     res = validate_domain_or_fail(target_url)
+
+    if res:
+        # if validation passes, parse the url
+        parsed_target_url = urlparse(target_url)
+        # create a directory for the data
+        bootstrap.setup_data_directory(parsed_target_url)
 
     return res
 
