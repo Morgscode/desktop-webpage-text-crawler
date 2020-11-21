@@ -31,8 +31,6 @@ def validate_domain_or_fail(url: str):
         with open("./web-scraper-logs/error.txt", "a+") as error_file:
 
             error_file.write(error)
-
-        domain_entry.delete(0, 'end')
         return False
     else:
         return True
@@ -126,6 +124,10 @@ def grab_webpage_content():
                 print('done scraping! - indexed 1 page... ready for more')
 
         domain_entry.delete(0, 'end')
+    else:
+        # if init() returns false, we've handled it
+        # so just clear the gui input
+        domain_entry.delete(0, 'end')
 
 
 # lets build the gui
@@ -137,17 +139,17 @@ window.geometry('400x200+250+200')
 # website field label
 domain = StringVar()
 domain_label = Label(
-    window, text="Enter the website url you want to index", font=("bold", 16), padx=50, pady=10)
-domain_label.grid(row=1, column=0, sticky=W)
+    window, text="Enter the website url you want to index", font=("normal", 18))
+domain_label.grid(row=1, sticky=W, padx=3, pady=5)
 
 # website text field
-domain_entry = Entry(window, textvariable=domain)
-domain_entry.grid(row=2, column=0, ipady=5, ipadx=5)
+domain_entry = Entry(window, textvariable=domain, justify=LEFT)
+domain_entry.grid(row=2, sticky=W, padx=5, pady=5)
 
 # button
 crawl_button = Button(window, text="Get website content",
                       font=14, command=grab_webpage_content)
-crawl_button.grid(row=3, column=0, pady=10, ipadx=12, ipady=7)
+crawl_button.grid(row=3, sticky=W,  padx=5, pady=5)
 
 # run the gui
 window.mainloop()
