@@ -15,8 +15,8 @@ def validate_web_url(url: str):
             errcode=e.code, errreason=e.reason)
 
         with open("./web-scraper-logs/error.txt", "a+") as error_file:
-
             error_file.write(error)
+
         return False
     else:
         return True
