@@ -41,7 +41,7 @@ def convert_html_to_soup_obj(html: HTTPResponse):
     return html_soup
 
 
-def get_webpage_links_in_nav(html: BeautifulSoup):
+def get_webpage_links_in_navs(html: BeautifulSoup):
     links = []
 
     # we need to asses if the page has a nav before we can look for links
