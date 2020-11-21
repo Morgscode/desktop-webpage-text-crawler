@@ -28,15 +28,29 @@ def retrieve_and_parse_url():
 def init():
     target_url = domain.get()
 
+    bootstrap.setup_error_logs()
+
     bootstrap.set_ssl_context()
 
-    # let's run it through our validation function
-    location_handler.validate_web_url(target_url)
+    try:
+        # let's run it through our validation function
+        location_handler.validate_web_url(target_url)
+    except:
+        # this will catch invalid domains, we'll write to logs and return false
+        error = "Web-scraper error in init fn...{target_url} is an invalid domain\n".format(
+            target_url=target_url)
 
-    # if validation passes, parse the url
-    parsed_target_url = urlparse(target_url)
+        with open("./web-scraper-logs/error.txt", "a+") as error_file:
 
-    bootstrap.setup_file_system(parsed_target_url)
+            error_file.write(error)
+
+        return False
+    else:
+        # if validation passes, parse the url
+        parsed_target_url = urlparse(target_url)
+        # create a directory for the data
+        bootstrap.setup_data_directory(parsed_target_url)
+        return True
 
 
 def index_webpage_content_by_url(link, index):
@@ -74,39 +88,45 @@ def index_webpage_content_by_url(link, index):
 
 def grab_webpage_content():
 
-    init()
-    try:
-        target_url = domain.get()
+    has_initialized = init()
 
-        # let's get the url as html
-        html = web_scraper.get_webpage_html(target_url)
+    if has_initialized:
 
-        if html is None:
-            domain_entry.delete(0, 'end')
-            # if the url opens, but there is no response, bail
-            return False
+        try:
+            target_url = domain.get()
 
-        # convert into beautifulsoup object
-        html_soup = web_scraper.convert_html_to_soup_obj(html)
+            # let's get the url as html
+            html = web_scraper.get_webpage_html(target_url)
 
-        # let's extract the links in the nav element
-        webpage_links = web_scraper.get_webpage_links_in_nav(html_soup)
+            if html is None:
+                domain_entry.delete(0, 'end')
+                # if the url opens, but there is no response, bail
+                return False
+            else:
+                # convert into beautifulsoup object
+                html_soup = web_scraper.convert_html_to_soup_obj(html)
 
-        if len(webpage_links) > 0:
-            # we'll use enumerate to generate an scope specific index
-            # this is used in the write file functions
-            for index, link in enumerate(webpage_links):
-                index_webpage_content_by_url(link, index)
+                # let's extract the links in the nav element
+                webpage_links = web_scraper.get_webpage_links_in_nav(html_soup)
 
-            print('done scraping!... ready for more')
-        else:
-            # if there are no links in a nav, just index the content on that page
-            index_webpage_content_by_url(target_url, 0)
+                if len(webpage_links) > 0:
+                    # we'll use enumerate to generate an scope specific index
+                    # this is used in the write file functions
+                    for index, link in enumerate(webpage_links):
+                        index_webpage_content_by_url(link, index)
 
-    except:
-        print('there was a problem somewhere!')
+                    print('done scraping!... ready for more')
+                else:
+                    # if there are no links in a nav, just index the content on that page
+                    index_webpage_content_by_url(target_url, 0)
 
-    domain_entry.delete(0, 'end')
+        except:
+            print('there was a problem somewhere!')
+
+        domain_entry.delete(0, 'end')
+
+    else:
+        domain_entry.delete(0, 'end')
 
 
 # lets build the gui

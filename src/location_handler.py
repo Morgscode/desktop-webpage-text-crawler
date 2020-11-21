@@ -8,10 +8,13 @@ from urllib.parse import urlparse
 def validate_web_url(url: str):
     # let's define a function to validate a url
     try:
-        urlopen(url)
-        return True
+        response = urlopen(url)
+
+        if response:
+            return True
+
     except HTTPError as e:
-        # on fail, we'll write to logs and exit
+        # this will catch 404s, 500s etc, we'll write to logs and exit
         error = "Web-scraper error in vaidate_web_url fn... ECODE: {errcode} error reason is: {errreason}\n".format(
             errcode=e.code, errreason=e.reason)
 

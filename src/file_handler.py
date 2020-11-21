@@ -1,8 +1,12 @@
 def write_text_to_file(web_page_text: str, formatted_path: str,  counter: int, parsed_target_url: str):
+
     # we use the counter to map the files in the directory to the same cacnonical order as the nav
+
     text_file_location = "./web-scraper-data/{domain}/{pgindex}_{fmtdpath}.txt".format(
         domain=parsed_target_url.netloc, pgindex=str(counter), fmtdpath=formatted_path)
+
     # lets open/create a new file called in the website data directory and overwrite its contents if its been indexed before
+
     with open(text_file_location, "w") as text_file:
         # lets write the text content to the new file we created
         text_file.write(web_page_text)
