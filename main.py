@@ -106,7 +106,7 @@ def grab_webpage_content():
             html_soup = web_scraper.convert_html_to_soup_obj(html)
 
             # let's extract the links in the nav element
-            webpage_links = web_scraper.get_webpage_links_in_nav(html_soup)
+            webpage_links = web_scraper.get_webpage_links_in_navs(html_soup)
 
             if len(webpage_links) > 0:
                 # we'll use enumerate to generate an scope specific index
