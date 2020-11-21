@@ -12,33 +12,37 @@ from bs4 import BeautifulSoup
 
 
 def get_webpage_html(url: str):
-    try:
-        # lets request the webpage html content
-        html = urlopen(url)
-    except HTTPError as e:
-        print(e)
-        # if it fails, let's encode our error as a string and write it to the logs
-        error = "Web-scraper error in get_webpage_page_html fn... error code is: {errcode}; error reason is: {errreason}\n".format(
-            errcode=e.code, errreason=e.reason)
+    if url != "/":
+        try:
+            # lets request the webpage html content
+            html = urlopen(url)
+        except HTTPError as e:
+            print(e)
+            # if it fails, let's encode our error as a string and write it to the logs
+            error = "Web-scraper error in get_webpage_page_html fn... error code is: {errcode}; error reason is: {errreason}\n".format(
+                errcode=e.code, errreason=e.reason)
 
-        with open("./web-scraper-logs/error.txt", "a+") as error_file:
+            with open("./web-scraper-logs/error.txt", "a+") as error_file:
 
-            error_file.write(error)
+                error_file.write(error)
 
-        return false
-    else:
-        return html
+            return false
+        else:
+            return html
 
 
 def convert_html_to_soup_obj(html: HTTPResponse):
 
-    # lets store the html as a utf-8 encoded string
-    html_string = html.read().decode('utf-8')
+    if not html is None:
+        # lets store the html as a utf-8 encoded string
+        html_string = html.read().decode('utf-8')
 
-    # let's parse the html into an object with BeautifulSoup
-    html_soup = BeautifulSoup(html_string, 'html.parser')
+        # let's parse the html into an object with BeautifulSoup
+        html_soup = BeautifulSoup(html_string, 'html.parser')
 
-    return html_soup
+        return html_soup
+    else:
+        return False
 
 
 def get_webpage_links_in_navs(html: BeautifulSoup):
@@ -56,7 +60,7 @@ def get_webpage_links_in_navs(html: BeautifulSoup):
                 # let's only push urls that are valid, and havn't been indexed in this fn
                 if page_link != "#" and page_link not in links:
                     links.append(page_link)
-                # we'll return either an empty, or filled list
+    # we'll return either an empty, or filled list
     return links
 
 

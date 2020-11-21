@@ -114,10 +114,13 @@ def grab_webpage_content():
                 for index, link in enumerate(webpage_links):
                     index_webpage_content_by_url(link, index)
 
-                print('done scraping!... ready for more')
+                print('done scraping! - indexed {pg_count} pages... ready for more'.format(
+                    pg_count=len(webpage_links)))
             else:
                 # if there are no links in a nav, just index the content on that page
                 index_webpage_content_by_url(target_url, 0)
+
+                print('done scraping! - indexed 1 page... ready for more')
 
         domain_entry.delete(0, 'end')
 
