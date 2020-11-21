@@ -14,15 +14,32 @@ from tkinter import *
 
 def retrieve_and_parse_url():
     target_url = domain.get()
+    parsed_target_url = urlparse(target_url)
+    return parsed_target_url
+
+
+def validate_domain_or_fail(url: str):
     try:
-        parsed_target_url = urlparse(target_url)
-        return parsed_target_url
-    except HTTPError as e:
-        error = "Web-scraper in init fn... ECODE: {errcode} error reason is: {errreason}\n".format(
-            errcode=e.code, errreason=e.reason)
+        # let's run it through our validation function
+        location_handler.validate_web_url(target_url)
+
+    except:
+        # this will catch invalid domains, we'll write to logs and return false
+        error = "Web-scraper error in validate_domain_or_fail fn...the domain: {target_url} is NOT valid\n".format(
+            target_url=target_url)
+
         with open("./web-scraper-logs/error.txt", "a+") as error_file:
 
             error_file.write(error)
+
+        domain_entry.delete(0, 'end')
+        return False
+    else:
+        # if validation passes, parse the url
+        parsed_target_url = urlparse(target_url)
+        # create a directory for the data
+        bootstrap.setup_data_directory(parsed_target_url)
+        return True
 
 
 def init():
@@ -32,25 +49,9 @@ def init():
 
     bootstrap.set_ssl_context()
 
-    try:
-        # let's run it through our validation function
-        location_handler.validate_web_url(target_url)
-    except:
-        # this will catch invalid domains, we'll write to logs and return false
-        error = "Web-scraper error in init fn...{target_url} is an invalid domain\n".format(
-            target_url=target_url)
+    res = validate_domain_or_fail(target_url)
 
-        with open("./web-scraper-logs/error.txt", "a+") as error_file:
-
-            error_file.write(error)
-
-        return False
-    else:
-        # if validation passes, parse the url
-        parsed_target_url = urlparse(target_url)
-        # create a directory for the data
-        bootstrap.setup_data_directory(parsed_target_url)
-        return True
+    return res
 
 
 def index_webpage_content_by_url(link, index):
