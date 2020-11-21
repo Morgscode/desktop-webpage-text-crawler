@@ -30,8 +30,8 @@ def validate_domain_or_fail(url: str):
             target_url=url)
 
         with open("./web-scraper-logs/error.txt", "a+") as error_file:
-
             error_file.write(error)
+
         return False
     else:
         return True
