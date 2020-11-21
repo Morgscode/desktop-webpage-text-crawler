@@ -4,3 +4,4 @@ web-scraper-logs/
 dist/
 build/
 *.pyc
+.DS_Store
