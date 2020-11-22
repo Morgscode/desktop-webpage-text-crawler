@@ -41,18 +41,20 @@ def convert_html_to_soup_obj(html: HTTPResponse):
         return False
 
 
-def get_webpage_links_in_navs(html: BeautifulSoup):
-    links = []
-    # we need to asses if the page has a nav before we can look for links
+def get_webpage_link_hrefs_in_navs(html: BeautifulSoup):
+    link_hrefs = []
+    # we need to asses if the page has a nav before we can look for _hrefs
     navs = html.find_all('nav')
+
     if navs:
+
         for nav in navs:
+
             # let's get the href of every link
             for link in nav.find_all('a'):
                 page_link = link.get('href')
 
-                if page_link not in links:
-                    print(page_link)
+                if page_link not in link_hrefs:
                     # let's only push urls that are valid, and havn't been indexed in this fn
                     # this regexp will pick up 'tel:, mailto: and #' hrefs
 
@@ -62,10 +64,9 @@ def get_webpage_links_in_navs(html: BeautifulSoup):
                     mo = page_link_regexp.search(page_link)
 
                     if not mo.group():
-                        links.append(page_link)
+                        link_hrefs.append(page_link)
     # we'll return either an empty, or filled list
-    print(links)
-    return links
+    return link_hrefs
 
 
 def convert_soup_to_text(html_soup: BeautifulSoup):

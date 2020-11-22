@@ -114,19 +114,29 @@ def grab_webpage_content():
             html_soup = web_scraper.convert_html_to_soup_obj(html)
 
             # let's extract the links in the nav element
-            webpage_links = web_scraper.get_webpage_links_in_navs(html_soup)
+            webpage_links = web_scraper.get_webpage_link_hrefs_in_navs(
+                html_soup)
 
-            if len(webpage_links) > 0:
+            formatted_webpage_links = []
+
+            for webpage_link_href in webpage_links:
+                webpage_link_href = location_handler.format_href_as_url(
+                    webpage_link_href, formatted_target_url)
+                formatted_webpage_links.append(webpage_link_href)
+
+            if len(formatted_webpage_links) > 0:
                 # we'll use enumerate to generate an scope specific index
                 # this is used in the write file functions
-                for index, link in enumerate(webpage_links):
+                for index, link in enumerate(formatted_webpage_links):
                     try:
                         index_webpage_content_by_url(link, index)
                     except:
                         return False
 
                 messagebox.showinfo(title="great success!", message="done scraping! - indexed {pg_count} pages... ready for more".format(
-                    pg_count=len(webpage_links)))
+                    pg_count=len(formatted_webpage_links)))
+
+                domain_entry.delete(0, 'end')
             else:
                 try:
                     # if there are no links in a nav, just index the content on that page
@@ -137,7 +147,7 @@ def grab_webpage_content():
                 messagebox.showinfo(
                     title="great success!", message="done scraping! - indexed 1 page... ready for more")
 
-        domain_entry.delete(0, 'end')
+                domain_entry.delete(0, 'end')
     else:
         # if init() returns false, we've handled it
         # so just clear the gui input
