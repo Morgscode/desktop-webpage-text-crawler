@@ -1,7 +1,3 @@
-# packages = { BeautifulSoup: html-parsing }
-# This script will index all of the text content on webapges found within the NAV element of a website
-# pass the website you want to index in the target_url variable on line 15
-
 import sys
 import re
 
