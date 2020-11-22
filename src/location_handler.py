@@ -1,4 +1,5 @@
 import sys
+import re
 
 from urllib.request import urlopen
 from urllib.error import HTTPError
@@ -44,3 +45,42 @@ def format_path(link: str):
         file_path = file_pathList[-1]
 
     return file_path
+
+
+def manage_domain_scheme(target_domain: str):
+
+    # we need a function to add a scheme to the url is one if not present.
+    # this regexp will check for a scheme
+    scheme_regexp = re.compile(r'https?://')
+
+    mo = scheme_regexp.search(target_domain)
+    # if no match is found, let's attach a scheme
+    if mo is None:
+        target_domain = "http://{domain}".format(domain=target_domain)
+
+    return target_domain
+
+
+def format_href_as_url(href: str, target_domain):
+    # we need an fn to ensure there is a http shceme and domain name for each link href
+    # we'll need a regexp to check for these, and add them if none
+    href_regexp = re.compile(
+        r'(https?://)|(www.)?(.*)+')
+
+    mo = page_link_regexp.search(href)
+
+    parsed_target_domain = urlparse(target_domain)
+
+    print(parsed_target_domain)
+
+    if not mo.group():
+        # let's strip any trailing slashes
+        if href[0] == "/":
+            href = href[1:]
+        # if there wasn't shceme or url found
+        href = "{scheme}{domain}{href}".format(
+            scheme=parsed_target_domain.scheme, domain=parsed_target_domain.netloc)
+
+        return href
+    else:
+        return href

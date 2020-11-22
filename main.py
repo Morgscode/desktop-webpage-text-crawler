@@ -15,7 +15,8 @@ from tkinter import messagebox
 
 def retrieve_and_parse_url():
     target_url = domain.get()
-    parsed_target_url = urlparse(target_url)
+    formatted_target_url = location_handler.manage_domain_scheme(target_url)
+    parsed_target_url = urlparse(formatted_target_url)
     return parsed_target_url
 
 
@@ -40,15 +41,17 @@ def validate_domain_or_fail(url: str):
 def init():
     target_url = domain.get()
 
+    formatted_target_url = location_handler.manage_domain_scheme(target_url)
+
     bootstrap.setup_error_logs()
 
     bootstrap.set_ssl_context()
 
-    res = validate_domain_or_fail(target_url)
+    res = validate_domain_or_fail(formatted_target_url)
 
     if res:
         # if validation passes, parse the url
-        parsed_target_url = urlparse(target_url)
+        parsed_target_url = urlparse(formatted_target_url)
         # create a directory for the data
         bootstrap.setup_data_directory(parsed_target_url)
 
@@ -96,8 +99,11 @@ def grab_webpage_content():
 
         target_url = domain.get()
 
+        formatted_target_url = location_handler.manage_domain_scheme(
+            target_url)
+
         # let's get the url as html
-        html = web_scraper.get_webpage_html(target_url)
+        html = web_scraper.get_webpage_html(formatted_target_url)
 
         if html is None:
             domain_entry.delete(0, 'end')
