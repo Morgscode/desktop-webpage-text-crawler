@@ -6,6 +6,19 @@ from urllib.error import HTTPError
 from urllib.parse import urlparse
 
 
+def manage_domain_scheme(target_domain: str):
+    # we need a function to add a scheme to the url is one if not present.
+    # this regexp will check for a scheme
+    scheme_regexp = re.compile(r'https?://')
+
+    mo = scheme_regexp.search(target_domain)
+    # if no match is found, let's attach a default http:// scheme
+    if mo is None:
+        target_domain = "http://{domain}".format(domain=target_domain)
+
+    return target_domain
+
+
 def validate_web_url(url: str):
     # let's define a function to validate a url
     try:
@@ -47,40 +60,30 @@ def format_path(link: str):
     return file_path
 
 
-def manage_domain_scheme(target_domain: str):
+def format_href_as_url(href: str, target_domain: str):
 
-    # we need a function to add a scheme to the url is one if not present.
-    # this regexp will check for a scheme
-    scheme_regexp = re.compile(r'https?://')
-
-    mo = scheme_regexp.search(target_domain)
-    # if no match is found, let's attach a scheme
-    if mo is None:
-        target_domain = "http://{domain}".format(domain=target_domain)
-
-    return target_domain
-
-
-def format_href_as_url(href: str, target_domain):
-    # we need an fn to ensure there is a http shceme and domain name for each link href
-    # we'll need a regexp to check for these, and add them if none
-    href_regexp = re.compile(
-        r'(https?://)|(www.)?(.*)+')
-
-    mo = page_link_regexp.search(href)
-
-    parsed_target_domain = urlparse(target_domain)
-
-    print(parsed_target_domain)
-
-    if not mo.group():
-        # let's strip any trailing slashes
-        if href[0] == "/":
+    # if the href is "/", it's valid
+    if href != "/":
+        # if its longer
+        while href[0] == "/":
+            # strip away any leading slashes
             href = href[1:]
-        # if there wasn't shceme or url found
-        href = "{scheme}{domain}{href}".format(
-            scheme=parsed_target_domain.scheme, domain=parsed_target_domain.netloc)
 
-        return href
+        # we'll need a regexp to check for a scheme or valid domain, and add them if none
+        href_regexp = re.compile(
+            r'((https?://)|(www.))(.*)+')
+
+        mo = href_regexp.match(href)
+
+        parsed_target_domain = urlparse(target_domain)
+
+        if mo:
+            if mo.group() and re.match(r'www.', mo.group()) or mo.group() and not re.match(r'https?://', mo.group()):
+                # if there wasn't shceme found
+                href = "{scheme}://{href}".format(
+                    scheme=parsed_target_domain.scheme, href=href)
+                return href
+            else:
+                return href
     else:
         return href
