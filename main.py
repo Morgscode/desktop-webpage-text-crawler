@@ -114,13 +114,19 @@ def grab_webpage_content():
                 # we'll use enumerate to generate an scope specific index
                 # this is used in the write file functions
                 for index, link in enumerate(webpage_links):
-                    index_webpage_content_by_url(link, index)
+                    try:
+                        index_webpage_content_by_url(link, index)
+                    except:
+                        return False
 
                 messagebox.showinfo(title="great success!", message="done scraping! - indexed {pg_count} pages... ready for more".format(
                     pg_count=len(webpage_links)))
             else:
-                # if there are no links in a nav, just index the content on that page
-                index_webpage_content_by_url(target_url, 0)
+                try:
+                    # if there are no links in a nav, just index the content on that page
+                    index_webpage_content_by_url(target_url, 0)
+                except:
+                    return False
 
                 messagebox.showinfo(
                     title="great success!", message="done scraping! - indexed 1 page... ready for more")
