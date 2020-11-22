@@ -169,7 +169,7 @@ domain_label = Label(
 domain_label.grid(row=1, sticky=W, padx=3, pady=5)
 
 # website text field
-domain_entry = Entry(window, textvariable=domain, justify=LEFT)
+domain_entry = Entry(window, textvariable=domain)
 domain_entry.grid(row=2, sticky=W, padx=5, pady=5)
 
 # button
