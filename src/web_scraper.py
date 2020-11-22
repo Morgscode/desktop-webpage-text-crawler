@@ -59,7 +59,6 @@ def get_webpage_links_in_navs(html: BeautifulSoup):
                 page_link = link.get('href')
 
                 if page_link not in links:
-                    print(page_link)
                     # let's only push urls that are valid, and havn't been indexed in this fn
                     # this regexp will pick up 'tel:, mailto: and #' hrefs
                     page_link_regexp = re.compile(
