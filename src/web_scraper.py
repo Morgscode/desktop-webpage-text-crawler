@@ -40,6 +40,7 @@ def convert_html_to_soup_obj(html: HTTPResponse):
     else:
         return False
 
+
 def get_webpage_links_in_navs(html: BeautifulSoup):
     links = []
     # we need to asses if the page has a nav before we can look for links
@@ -54,10 +55,13 @@ def get_webpage_links_in_navs(html: BeautifulSoup):
                     print(page_link)
                     # let's only push urls that are valid, and havn't been indexed in this fn
                     # this regexp will pick up 'tel:, mailto: and #' hrefs
+
                     page_link_regexp = re.compile(
                         r'((mailto:|tel:)([A-z]+|[0-9])+|#|)')
+
                     mo = page_link_regexp.search(page_link)
-                    if mo is None:
+
+                    if not mo.group():
                         links.append(page_link)
     # we'll return either an empty, or filled list
     print(links)

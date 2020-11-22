@@ -44,3 +44,30 @@ def format_path(link: str):
         file_path = file_pathList[-1]
 
     return file_path
+
+
+# we need an fn to ensure there is a http shceme and domain name for each link href
+# we'll need a regexp to check for these, and add them if none
+def format_href_as_url(href: str, target_domain):
+    # let's only push urls that are valid, and havn't been indexed in this fn
+    # this regexp will pick up 'tel:, mailto: and #' hrefs
+    href_regexp = re.compile(
+        r'(https?://)(www.)?(.*)+')
+
+    mo = page_link_regexp.search(href)
+
+    parsed_target_domain = urlparse(target)
+
+    print(parsed_target_domain)
+
+    if mo is None:
+        # let's strip any trailing slashes
+        if href[0] == "/":
+            href = href[1:]
+        # if there wasn't shceme or url found
+        href = "{scheme}{domain}{href}".format(
+            scheme=parsed_target_domain.scheme, domain=parsed_target_domain.netloc)
+
+        return href
+    else:
+        return href
