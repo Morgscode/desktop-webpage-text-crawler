@@ -133,10 +133,11 @@ def grab_webpage_content():
                     except:
                         return False
 
+                domain_entry.delete(0, 'end')
+
                 messagebox.showinfo(title="great success!", message="done scraping! - indexed {pg_count} pages... ready for more".format(
                     pg_count=len(formatted_webpage_links)))
 
-                domain_entry.delete(0, 'end')
             else:
                 try:
                     # if there are no links in a nav, just index the content on that page
@@ -144,16 +145,16 @@ def grab_webpage_content():
                 except:
                     return False
 
+                domain_entry.delete(0, 'end')
+
                 messagebox.showinfo(
                     title="great success!", message="done scraping! - indexed 1 page... ready for more")
 
-                domain_entry.delete(0, 'end')
     else:
         # if init() returns false, we've handled it
         # so just clear the gui input
         messagebox.showinfo(title="Invalid domain requested",
                             message="That domain was invalid, check the logs for more information.")
-        domain_entry.delete(0, 'end')
 
 
 # lets build the gui
@@ -169,7 +170,7 @@ domain_label = Label(
 domain_label.grid(row=1, sticky=W, padx=3, pady=5)
 
 # website text field
-domain_entry = Entry(window, textvariable=domain, justify=LEFT)
+domain_entry = Entry(window, textvariable=domain)
 domain_entry.grid(row=2, sticky=W, padx=5, pady=5)
 
 # button
