@@ -40,47 +40,27 @@ def convert_html_to_soup_obj(html: HTTPResponse):
     else:
         return False
 
-
 def get_webpage_links_in_navs(html: BeautifulSoup):
     links = []
-
-    # we need to asses if the page has any nav[s] before we can look for links
+    # we need to asses if the page has a nav before we can look for links
     navs = html.find_all('nav')
-
     if navs:
-
         for nav in navs:
-            # this will allow us to assess ALL children of the nav
-            for child in nav.children:
-                # this will come to us as a NavigableString
-                # let's cast it back to a string
-                child_html = str(child)
-                # and parse it into a soup object
-                child_html_soup = BeautifulSoup(child_html, 'html.parser')
-                # extract all the link tags
-                page_link_tags = child_html_soup.find_all('a')
+            # let's get the href of every link
+            for link in nav.find_all('a'):
+                page_link = link.get('href')
 
-                if page_link_tags:
-
-                    for page_link in page_link_tags:
-                        # let's get the href of every link
-                        location = page_link.get('href')
-
-                        if location not in links:
-                            # let's only continue with urls that are valid, and havn't been indexed in this fn
-                            # this regexp will pick up 'tel:, mailto: and #' hrefs
-                            page_link_regexp = re.compile(
-                                r'((mailto:|tel:)([A-z]+|[0-9])+|#|)')
-                            page_link_regexp_mo = page_link_regexp.search(
-                                str(location))
-
-                            if not page_link_regexp_mo.group():
-                                # we need to add some logic to check for a domain
-                                # if not, let's retieve and parse the target url
-                                # and append the scheme and netloc to the location
-                                links.append(location)
-
+                if page_link not in links:
+                    print(page_link)
+                    # let's only push urls that are valid, and havn't been indexed in this fn
+                    # this regexp will pick up 'tel:, mailto: and #' hrefs
+                    page_link_regexp = re.compile(
+                        r'((mailto:|tel:)([A-z]+|[0-9])+|#|)')
+                    mo = page_link_regexp.search(page_link)
+                    if mo is None:
+                        links.append(page_link)
     # we'll return either an empty, or filled list
+    print(links)
     return links
 
 
