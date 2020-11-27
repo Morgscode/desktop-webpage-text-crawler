@@ -77,19 +77,26 @@ def format_href_as_url(href: str, target_domain: str):
 
         mo = href_regexp.match(href)
 
+        # let's parse the target_domain to use it to format
+        # an incorecct href into a url
+        parsed_target_domain = urlparse(target_domain)
+
         if mo:
             # let's asses for either a www. or no scheme
             if mo.group() and re.match(r'www.', mo.group()) or mo.group() and not re.match(r'https?://', mo.group()):
-                # let's parse the target_domain to use it to format
-                # an incorecct href into a url
-                parsed_target_domain = urlparse(target_domain)
+
                 # if there wasn't shceme found
                 href = "{scheme}://{href}".format(
                     scheme=parsed_target_domain.scheme, href=href)
                 return href
             else:
-                # if the href is a valid url, just return it
+                # if it has a scheme or domain, return it
                 return href
+        else:
+            # there was no scheme or domain -> common in static websites
+            href = "{scheme}://{net_location}/{href}".format(
+                scheme=parsed_target_domain.scheme, net_location=parsed_target_domain.netloc, href=href)
+            return href
     else:
         # if the href was "/", return it
         return href
