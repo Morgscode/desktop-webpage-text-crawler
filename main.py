@@ -113,12 +113,6 @@ def process_user_crawl_request():
             # convert into beautifulsoup object
             html_soup = web_scraper.convert_html_to_soup_obj(html)
 
-            # webpage_links_on_page = web_scraper.get_internal_links_from_webpage(
-            #     html_soup, formatted_target_url)
-
-            # print(webpage_links_on_page)
-
-            # sys.exit()
             # let's extract the links in the nav element
             webapge_links_in_navs = web_scraper.get_webpage_link_hrefs_in_navs(
                 html_soup)
