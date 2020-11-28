@@ -55,7 +55,9 @@ def get_valid_webpage_link_hrefs_in_navs(html: BeautifulSoup):
 
                 if page_link and page_link not in link_hrefs:
 
-                    # let's only push urls that are valid, and havn't been indexed in this fn
+                    # let's only push urls that are valid, are not pdf files
+                    # and havn't been indexed in this fn
+
                     # this regexp will pick up
                     # hrefs that start with 'tel:, mailto:
                     # and hrefs that end with .pdf
