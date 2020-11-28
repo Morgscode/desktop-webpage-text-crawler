@@ -1,6 +1,3 @@
-import re
-
-
 def write_text_to_file(web_page_text: str, formatted_path: str,  counter: int, parsed_target_url: str):
 
     # we use the counter to map the files in the directory to the same cacnonical order as the nav
