@@ -122,8 +122,8 @@ def process_user_crawl_request():
     # so it can complete, regardless of state and give the
     # user some feedback... this maintains the ux
     # if errors do occur...
-    # errors will be written to the logs
-    # error messages may be displayed to the user
+    # errors WILL be written to the logs
+    # error messages MAY be displayed to the user
     ###
 
     has_initialized = init()
@@ -161,10 +161,14 @@ def process_user_crawl_request():
                 # we'll use enumerate to generate an scope specific index
                 # this is used in the write file functions
                 pages_indexed = 0
+                indexing_errors = 0
+
+                # if there are no links in a nav, just index the content on that page
+                index_webpage_content_by_url(target_url, 0)
 
                 for index, link in enumerate(formatted_webpage_links_in_nav):
                     try:
-                        index_webpage_content_by_url(link, index)
+                        index_webpage_content_by_url(link, index + 1)
                     except:
                         # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
                         error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT valid\n".format(
@@ -172,14 +176,14 @@ def process_user_crawl_request():
 
                         with open("./web-scraper-logs/error.txt", "a+") as error_file:
                             error_file.write(error)
-
+                        indexing_errors += 1
                     else:
                         pages_indexed += 1
 
                 domain_entry.delete(0, 'end')
 
-                messagebox.showinfo(title="great success!", message="done scraping! - crawled {crwl_pg_count} pages, indexed {ind_pg_count}... ready for more".format(
-                    crwl_pg_count=len(formatted_webpage_links_in_nav), ind_pg_count=pages_indexed))
+                messagebox.showinfo(title="great success!", message="done scraping! - crawled {crwl_pg_count} pages, indexed {ind_pg_count} pages with {error_count} errors... ready for more".format(
+                    crwl_pg_count=len(formatted_webpage_links_in_nav), ind_pg_count=pages_indexed, error_count=indexing_errors))
 
             else:
                 try:
@@ -212,7 +216,7 @@ def process_user_crawl_request():
 window = Tk()
 
 window.title('Webpage content scraper')
-window.geometry('400x200+250+200')
+window.geometry('350x150+250+200')
 
 # website field label
 domain = StringVar()
@@ -235,7 +239,7 @@ data_dir_button = Button(window, text="Open data folder",
 
 data_dir_button.grid(row=4, sticky=W, padx=5, pady=10)
 
-# data directory button
+# error logs directory button
 error_logs_dir_button = Button(window, text="Open logs",
                                font=14, command=open_logs_dir)
 

@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 def manage_domain_scheme(target_domain: str):
     # we need a function to add a scheme to the url is one if not present.
     # this regexp will check for a scheme
-    scheme_regexp = re.compile(r'https?://')
+    scheme_regexp = re.compile(r'$https?://')
 
     mo = scheme_regexp.search(target_domain)
     # if no match is found, let's attach a default http:// scheme
