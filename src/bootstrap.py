@@ -20,3 +20,10 @@ def setup_error_logs():
     # let's create a directory for logs
     if not os.path.exists('./web-scraper-logs'):
         os.makedirs('./web-scraper-logs')
+
+
+def dir_exists(dir: str):
+    if not os.path.exists(dir):
+        return False
+    else:
+        return True

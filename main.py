@@ -10,7 +10,7 @@ from urllib.error import HTTPError
 from urllib.parse import urlparse
 
 from tkinter import *
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 
 
 def retrieve_and_parse_url():
@@ -36,6 +36,30 @@ def validate_domain_or_fail(url: str):
         return False
     else:
         return True
+
+
+def open_data_dir():
+
+    is_dir = bootstrap.dir_exists("./web-scraper-data")
+
+    if is_dir:
+        filedialog.askopenfilename(
+            initialdir="./web-scraper-data", title="Browse your scraped websites")
+    else:
+        messagebox.showerror(title="oops! we couldn't find the data folder",
+                             message="it looks that folder doesn't exist, try crawling a site first...")
+
+
+def open_logs_dir():
+
+    is_dir = bootstrap.dir_exists("./web-scraper-logs")
+
+    if is_dir:
+        filedialog.askopenfilename(
+            initialdir="./web-scraper-logs", title="Browse the crawlers error logs")
+    else:
+        messagebox.showerror(title="oops! we couldn't find the logs",
+                             message="it looks like that folder doesn't exist, try crawling a site first...")
 
 
 def init():
@@ -92,6 +116,15 @@ def index_webpage_content_by_url(link, index):
 
 
 def process_user_crawl_request():
+
+    ###
+    # errors need to be allowed to continue in this function
+    # so it can complete, regardless of state and give the
+    # user some feedback... this maintains the ux
+    # if errors do occur...
+    # errors will be written to the logs
+    # error messages may be displayed to the user
+    ###
 
     has_initialized = init()
 
@@ -154,11 +187,14 @@ def process_user_crawl_request():
                     index_webpage_content_by_url(target_url, 0)
                 except:
                     # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
-                    error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT valid\n".format(
+                    error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT indexable as text content\n".format(
                         target_url=target_url)
 
                     with open("./web-scraper-logs/error.txt", "a+") as error_file:
                         error_file.write(error)
+
+                    messagebox.showerror(title="oh dear! there was an issue",
+                                         message="there was a problem when crawling {target_url}... check the logs for information".format(target_url=target_url))
 
                 domain_entry.delete(0, 'end')
 
@@ -192,6 +228,18 @@ domain_entry.grid(row=2, sticky=W, padx=5, pady=5)
 crawl_button = Button(window, text="Get website content",
                       font=14, command=process_user_crawl_request)
 crawl_button.grid(row=3, sticky=W,  padx=5, pady=5)
+
+# data directory button
+data_dir_button = Button(window, text="Open data folder",
+                         font=14, command=open_data_dir)
+
+data_dir_button.grid(row=4, sticky=W, padx=5, pady=10)
+
+# data directory button
+error_logs_dir_button = Button(window, text="Open logs",
+                               font=14, command=open_logs_dir)
+
+error_logs_dir_button.grid(row=4, padx=5, pady=10)
 
 # run the gui
 window.mainloop()
