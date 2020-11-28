@@ -113,13 +113,20 @@ def process_user_crawl_request():
             # convert into beautifulsoup object
             html_soup = web_scraper.convert_html_to_soup_obj(html)
 
+            page_links = web_scraper.get_internal_links_from_webpage(
+                html_soup, formatted_target_url)
+
+            print(page_links)
+
+            sys.exit()
+
             # let's extract the links in the nav element
-            webapge_links_in_navs = web_scraper.get_webpage_link_hrefs_in_navs(
+            webpage_links_in_navs = web_scraper.get_valid_webpage_link_hrefs_in_navs(
                 html_soup)
 
             formatted_webpage_links_in_nav = []
 
-            for webpage_link_href in webapge_links_in_navs:
+            for webpage_link_href in webpage_links_in_navs:
                 webpage_link_href = location_handler.format_href_as_url(
                     webpage_link_href, formatted_target_url)
                 formatted_webpage_links_in_nav.append(webpage_link_href)
@@ -153,7 +160,12 @@ def process_user_crawl_request():
                     # if there are no links in a nav, just index the content on that page
                     index_webpage_content_by_url(target_url, 0)
                 except:
-                    return False
+                    # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
+                    error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT valid\n".format(
+                        target_url=target_url)
+
+                    with open("./web-scraper-logs/error.txt", "a+") as error_file:
+                        error_file.write(error)
 
                 domain_entry.delete(0, 'end')
 
