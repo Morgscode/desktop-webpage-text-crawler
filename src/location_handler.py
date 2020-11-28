@@ -112,3 +112,10 @@ def filter_pdf_link_locations(links: list):
     for link in links:
 
         pdf_regexp = re.compile(r'.pdf$')
+
+        mo = pdf_regexp.search(link)
+
+        if mo is None:
+            filtered_links.append(link)
+
+    return filtered_links
