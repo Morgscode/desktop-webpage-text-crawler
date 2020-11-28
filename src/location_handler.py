@@ -36,7 +36,7 @@ def validate_web_url(url: str):
         return True
 
 
-def format_path(link: str):
+def format_path_as_file_location(link: str):
     # let's parse the url and grab the path
     parsed_url = urlparse(link)
     file_path = parsed_url.path
@@ -62,7 +62,11 @@ def format_path(link: str):
 
 def format_href_as_url(href: str, target_domain: str):
 
-    # if the href is "/", it's valid
+    # let's parse the target_domain to use it to format
+    # an incorect href into a url
+    parsed_target_domain = urlparse(target_domain)
+
+    # if the href is "/", it's valid, but will need the scheme and domain
     if href != "/":
         # if its longer
         while href[0] == "/":
@@ -77,12 +81,8 @@ def format_href_as_url(href: str, target_domain: str):
 
         mo = href_regexp.match(href)
 
-        # let's parse the target_domain to use it to format
-        # an incorecct href into a url
-        parsed_target_domain = urlparse(target_domain)
-
         if mo:
-            # let's asses for either a www. or no scheme
+            # let's asses for hrefs starting with either a www. or no scheme
             if mo.group() and re.match(r'www.', mo.group()) or mo.group() and not re.match(r'https?://', mo.group()):
 
                 # if there wasn't shceme found
@@ -98,5 +98,17 @@ def format_href_as_url(href: str, target_domain: str):
                 scheme=parsed_target_domain.scheme, net_location=parsed_target_domain.netloc, href=href)
             return href
     else:
-        # if the href was "/", return it
+        # if the href was "/", grab the scheme and target domain and prepend
+        href = "{scheme}://{net_location}{href}".format(
+            scheme=parsed_target_domain.scheme, net_location=parsed_target_domain.netloc, href=href)
+
         return href
+
+
+def filter_pdf_link_locations(links: list):
+
+    filtered_links = []
+
+    for link in links:
+
+        pdf_regexp = re.compile(r'.pdf$')
