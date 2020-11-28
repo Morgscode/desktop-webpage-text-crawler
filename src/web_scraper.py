@@ -16,8 +16,8 @@ def get_webpage_html(url: str):
         except HTTPError as e:
             print(e)
             # if it fails, let's encode our error as a string and write it to the logs
-            error = "Web-scraper error in get_webpage_page_html fn... error code is: {errcode}; error reason is: {errreason}\n".format(
-                errcode=e.code, errreason=e.reason)
+            error = "Web-scraper error in get_webpage_page_html fn... error code is: {errcode}; error reason is: {errreason} at url: {url}\n".format(
+                errcode=e.code, errreason=e.reason, url=url)
 
             with open("./web-scraper-logs/error.txt", "a+") as error_file:
                 error_file.write(error)
@@ -54,19 +54,65 @@ def get_webpage_link_hrefs_in_navs(html: BeautifulSoup):
             for link in nav.find_all('a'):
                 page_link = link.get('href')
 
-                if page_link not in link_hrefs:
+                if page_link and page_link not in link_hrefs:
+
                     # let's only push urls that are valid, and havn't been indexed in this fn
                     # this regexp will pick up 'tel:, mailto: and #' hrefs
-
                     page_link_regexp = re.compile(
-                        r'((mailto:|tel:)([A-z]+|[0-9])+|#|)')
+                        r'(mailto:[A-z]+|tel:\+?[0-9]+|#)')
 
                     mo = page_link_regexp.search(page_link)
 
-                    if not mo.group():
+                    # if regexp does not match, we can add it as
+                    # a valid href
+                    if mo is None:
                         link_hrefs.append(page_link)
+
     # we'll return either an empty, or filled list
     return link_hrefs
+
+
+def get_internal_links_from_webpage(html: BeautifulSoup, target_url: str):
+    internal_links = []
+
+    links = html.find_all("a")
+
+    if links:
+
+        for link in links:
+            # lets only work with links we havn't indexed yet
+            if link not in internal_links:
+
+                # lets extract all the hrefs
+                link_href = link.get('href')
+
+                if link_href:
+                    parsed_target_url = urlparse(target_url)
+
+                    # lets extract te target domain to format
+                    # hrefs which aren't valid urls
+                    target_domain = parsed_target_url.netloc
+
+                    # if there is a www, lets remove it
+                    if target_domain.startswith('www.'):
+                        target_domain = target_domain[4:]
+
+                    # we need a regexp to search for strings that contain
+                    # either 1) target domain 2) a "/{path}"
+                    internal_link_regexp = re.compile(
+                        r'(^/|https?://(www.)?{domain})'.format(domain=target_domain))
+
+                    mo = internal_link_regexp.match(link.attrs['href'])
+
+                    if mo and mo.group():
+                        internal_links.append(link.attrs['href'])
+
+    else:
+        # if no links were found on the page, bail!
+        return False
+
+    # if there were links found on the page, lets return them
+    return internal_links
 
 
 def convert_soup_to_text(html_soup: BeautifulSoup):

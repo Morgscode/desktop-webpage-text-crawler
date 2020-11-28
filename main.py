@@ -72,7 +72,7 @@ def index_webpage_content_by_url(link, index):
         page_html_soup)
 
     # let's generate a formatted path for this webpage
-    formatted_path = location_handler.format_path(link)
+    formatted_path = location_handler.format_path_as_file_location(link)
 
     # we'll also need a parse version of the full url
     parsed_target_url = retrieve_and_parse_url()
@@ -91,7 +91,7 @@ def index_webpage_content_by_url(link, index):
         formatted_text, formatted_path, index, parsed_target_url)
 
 
-def grab_webpage_content():
+def process_user_crawl_request():
 
     has_initialized = init()
 
@@ -113,30 +113,46 @@ def grab_webpage_content():
             # convert into beautifulsoup object
             html_soup = web_scraper.convert_html_to_soup_obj(html)
 
+            # webpage_links_on_page = web_scraper.get_internal_links_from_webpage(
+            #     html_soup, formatted_target_url)
+
+            # print(webpage_links_on_page)
+
+            # sys.exit()
             # let's extract the links in the nav element
-            webpage_links = web_scraper.get_webpage_link_hrefs_in_navs(
+            webapge_links_in_navs = web_scraper.get_webpage_link_hrefs_in_navs(
                 html_soup)
 
-            formatted_webpage_links = []
+            formatted_webpage_links_in_nav = []
 
-            for webpage_link_href in webpage_links:
+            for webpage_link_href in webapge_links_in_navs:
                 webpage_link_href = location_handler.format_href_as_url(
                     webpage_link_href, formatted_target_url)
-                formatted_webpage_links.append(webpage_link_href)
+                formatted_webpage_links_in_nav.append(webpage_link_href)
 
-            if len(formatted_webpage_links) > 0:
+            if len(formatted_webpage_links_in_nav) > 0:
                 # we'll use enumerate to generate an scope specific index
                 # this is used in the write file functions
-                for index, link in enumerate(formatted_webpage_links):
+                pages_indexed = 0
+
+                for index, link in enumerate(formatted_webpage_links_in_nav):
                     try:
                         index_webpage_content_by_url(link, index)
                     except:
-                        return False
+                        # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
+                        error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT valid\n".format(
+                            target_url=link)
+
+                        with open("./web-scraper-logs/error.txt", "a+") as error_file:
+                            error_file.write(error)
+
+                    else:
+                        pages_indexed += 1
 
                 domain_entry.delete(0, 'end')
 
-                messagebox.showinfo(title="great success!", message="done scraping! - indexed {pg_count} pages... ready for more".format(
-                    pg_count=len(formatted_webpage_links)))
+                messagebox.showinfo(title="great success!", message="done scraping! - crawled {crwl_pg_count} pages, indexed {ind_pg_count}... ready for more".format(
+                    crwl_pg_count=len(formatted_webpage_links_in_nav), ind_pg_count=pages_indexed))
 
             else:
                 try:
@@ -175,7 +191,7 @@ domain_entry.grid(row=2, sticky=W, padx=5, pady=5)
 
 # button
 crawl_button = Button(window, text="Get website content",
-                      font=14, command=grab_webpage_content)
+                      font=14, command=process_user_crawl_request)
 crawl_button.grid(row=3, sticky=W,  padx=5, pady=5)
 
 # run the gui
