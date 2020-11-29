@@ -146,46 +146,10 @@ def process_user_crawl_request():
             # convert into beautifulsoup object
             html_soup = web_scraper.convert_html_to_soup_obj(html)
 
-            # let's extract the links in the nav element
-            webpage_links_in_navs = web_scraper.get_valid_webpage_link_hrefs_in_navs(
-                html_soup)
+            user_crawl_option = crawl_option.get()
 
-            formatted_webpage_links_in_nav = []
+            if user_crawl_option == 'single page':
 
-            for webpage_link_href in webpage_links_in_navs:
-                webpage_link_href = location_handler.format_href_as_url(
-                    webpage_link_href, formatted_target_url)
-                formatted_webpage_links_in_nav.append(webpage_link_href)
-
-            if len(formatted_webpage_links_in_nav) > 0:
-                # we'll use enumerate to generate an scope specific index
-                # this is used in the write file functions
-                pages_indexed = 0
-                indexing_errors = 0
-
-                # if there are no links in a nav, just index the content on that page
-                index_webpage_content_by_url(target_url, 0)
-
-                for index, link in enumerate(formatted_webpage_links_in_nav):
-                    try:
-                        index_webpage_content_by_url(link, index + 1)
-                    except:
-                        # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
-                        error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT valid\n".format(
-                            target_url=link)
-
-                        with open("./web-scraper-logs/error.txt", "a+") as error_file:
-                            error_file.write(error)
-                        indexing_errors += 1
-                    else:
-                        pages_indexed += 1
-
-                domain_entry.delete(0, 'end')
-
-                messagebox.showinfo(title="great success!", message="done scraping! - crawled {crwl_pg_count} pages, indexed {ind_pg_count} pages with {error_count} errors... ready for more".format(
-                    crwl_pg_count=len(formatted_webpage_links_in_nav), ind_pg_count=pages_indexed, error_count=indexing_errors))
-
-            else:
                 try:
                     # if there are no links in a nav, just index the content on that page
                     index_webpage_content_by_url(target_url, 0)
@@ -202,8 +166,127 @@ def process_user_crawl_request():
 
                 domain_entry.delete(0, 'end')
 
-                messagebox.showinfo(
-                    title="great success!", message="done scraping! - indexed 1 page... ready for more")
+            elif user_crawl_option == 'internal nav links':
+
+                # let's extract the links in the nav element
+                webpage_links_in_navs = web_scraper.get_valid_webpage_link_hrefs_in_navs(
+                    html_soup)
+
+                formatted_webpage_links_in_nav = []
+
+                for webpage_link_href in webpage_links_in_navs:
+                    webpage_link_href = location_handler.format_href_as_url(
+                        webpage_link_href, formatted_target_url)
+                    formatted_webpage_links_in_nav.append(webpage_link_href)
+
+                if len(formatted_webpage_links_in_nav) > 0:
+                    # we'll use enumerate to generate an scope specific index
+                    # this is used in the write file functions
+                    pages_indexed = 0
+                    indexing_errors = 0
+
+                    # if there are no links in a nav, just index the content on that page
+                    index_webpage_content_by_url(target_url, 0)
+
+                    for index, link in enumerate(formatted_webpage_links_in_nav):
+                        try:
+                            index_webpage_content_by_url(link, index + 1)
+                        except:
+                            # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
+                            error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT valid\n".format(
+                                target_url=link)
+
+                            with open("./web-scraper-logs/error.txt", "a+") as error_file:
+                                error_file.write(error)
+                            indexing_errors += 1
+                        else:
+                            pages_indexed += 1
+
+                    domain_entry.delete(0, 'end')
+
+                    messagebox.showinfo(title="great success!", message="done scraping! - crawled {crwl_pg_count} pages, indexed {ind_pg_count} pages with {error_count} errors... ready for more".format(
+                        crwl_pg_count=len(formatted_webpage_links_in_nav), ind_pg_count=pages_indexed, error_count=indexing_errors))
+
+                else:
+                    try:
+                        # if there are no links in a nav, just index the content on that page
+                        index_webpage_content_by_url(target_url, 0)
+                    except:
+                        # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
+                        error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT indexable as text content\n".format(
+                            target_url=target_url)
+
+                        with open("./web-scraper-logs/error.txt", "a+") as error_file:
+                            error_file.write(error)
+
+                        messagebox.showerror(title="oh dear! there was an issue",
+                                             message="there was a problem when crawling {target_url}... check the logs for information".format(target_url=target_url))
+
+                    domain_entry.delete(0, 'end')
+
+                    messagebox.showinfo(
+                        title="great success!", message="done scraping! - indexed 1 page... ready for more")
+
+            elif user_crawl_option == 'internal page links':
+
+                # let's extract the links in the nav element
+                internal_page_links = web_scraper.get_internal_links_from_webpage(
+                    html_soup, target_url)
+
+                formatted_webpage_links_in_nav = []
+
+                for webpage_link_href in internal_page_links:
+                    webpage_link_href = location_handler.format_href_as_url(
+                        webpage_link_href, formatted_target_url)
+                    formatted_webpage_links_in_nav.append(webpage_link_href)
+
+                if len(formatted_webpage_links_in_nav) > 0:
+                    # we'll use enumerate to generate an scope specific index
+                    # this is used in the write file functions
+                    pages_indexed = 0
+                    indexing_errors = 0
+
+                    # if there are no links in a nav, just index the content on that page
+                    index_webpage_content_by_url(target_url, 0)
+
+                    for index, link in enumerate(formatted_webpage_links_in_nav):
+                        try:
+                            index_webpage_content_by_url(link, index + 1)
+                        except:
+                            # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
+                            error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT valid\n".format(
+                                target_url=link)
+
+                            with open("./web-scraper-logs/error.txt", "a+") as error_file:
+                                error_file.write(error)
+                            indexing_errors += 1
+                        else:
+                            pages_indexed += 1
+
+                    domain_entry.delete(0, 'end')
+
+                    messagebox.showinfo(title="great success!", message="done scraping! - crawled {crwl_pg_count} pages, indexed {ind_pg_count} pages with {error_count} errors... ready for more".format(
+                        crwl_pg_count=len(formatted_webpage_links_in_nav), ind_pg_count=pages_indexed, error_count=indexing_errors))
+
+                else:
+                    try:
+                        # if there are no links in a nav, just index the content on that page
+                        index_webpage_content_by_url(target_url, 0)
+                    except:
+                        # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
+                        error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT indexable as text content\n".format(
+                            target_url=target_url)
+
+                        with open("./web-scraper-logs/error.txt", "a+") as error_file:
+                            error_file.write(error)
+
+                        messagebox.showerror(title="oh dear! there was an issue",
+                                             message="there was a problem when crawling {target_url}... check the logs for information".format(target_url=target_url))
+
+                    domain_entry.delete(0, 'end')
+
+                    messagebox.showinfo(
+                        title="great success!", message="done scraping! - indexed 1 page... ready for more")
 
     else:
         # if init() returns false, we've handled it
@@ -216,7 +299,7 @@ def process_user_crawl_request():
 window = Tk()
 
 window.title('Webpage content scraper')
-window.geometry('350x150+250+200')
+window.geometry('450x300+250+200')
 
 # website field label
 domain = StringVar()
@@ -226,24 +309,36 @@ domain_label.grid(row=1, sticky=W, padx=3, pady=5)
 
 # website text field
 domain_entry = Entry(window, textvariable=domain)
-domain_entry.grid(row=2, sticky=W, padx=5, pady=5)
+domain_entry.grid(row=2, sticky=W, padx=5, pady=5, ipady=5)
 
-# button
+# lets store the crawl option
+crawl_option = StringVar()
+crawl_option.set('internal nav links')
+# crawl options radio
+options_label = Label(
+    window, text="refine how you crawl the domain", font=("normal", 14))
+options_label.grid(row=3, sticky=W, padx=3, pady=5)
+
+options_menu = OptionMenu(window, crawl_option, 'single page',
+                          'internal page links', 'internal nav links')
+options_menu.grid(row=4, sticky=W, padx=3, pady=5)
+
+# crawl button
 crawl_button = Button(window, text="Get website content",
                       font=14, command=process_user_crawl_request)
-crawl_button.grid(row=3, sticky=W,  padx=5, pady=5)
+crawl_button.grid(row=5, sticky=W,  padx=5, pady=10)
 
 # data directory button
 data_dir_button = Button(window, text="Open data folder",
                          font=14, command=open_data_dir)
 
-data_dir_button.grid(row=4, sticky=W, padx=5, pady=10)
+data_dir_button.grid(row=6, sticky=W, padx=5, pady=10)
 
 # error logs directory button
 error_logs_dir_button = Button(window, text="Open logs",
                                font=14, command=open_logs_dir)
 
-error_logs_dir_button.grid(row=4, padx=5, pady=10)
+error_logs_dir_button.grid(row=6, padx=5, pady=10)
 
 # run the gui
 window.mainloop()
