@@ -3,6 +3,7 @@ import ssl
 
 # we need to set the deafult sll context to 'unverified'
 # not okay for production code!!!
+# if prod: use requests module instead
 
 
 def set_ssl_context():

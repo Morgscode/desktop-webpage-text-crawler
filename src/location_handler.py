@@ -5,6 +5,8 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 from urllib.parse import urlparse
 
+import requests
+
 
 def manage_domain_scheme(target_domain: str):
     # we need a function to add a scheme to the url is one if not present.
@@ -22,7 +24,7 @@ def manage_domain_scheme(target_domain: str):
 def validate_web_url(url: str):
     # let's define a function to validate a url
     try:
-        response = urlopen(url)
+        response = requests.get(url, allow_redirects=False)
     except HTTPError as e:
         # this will catch 404s, 500s etc, we'll write to logs and exit
         error = "Web-scraper error in vaidate_web_url fn... ECODE: {errcode} error reason is: {errreason}\n".format(
