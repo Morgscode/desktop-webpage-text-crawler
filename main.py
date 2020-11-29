@@ -307,12 +307,12 @@ def process_user_crawl_request():
 window = Tk()
 
 window.title('Webpage content scraper')
-window.geometry('400x275+250+200')
+window.geometry('400x375+250+200')
 window.configure(bg="#bdc3c7")
 
 # set up the frame for the domain entry widget field
 domain_entry_frame = Frame(window, width=100, height=100, bg="#95a5a6")
-domain_entry_frame.grid(sticky=NSEW, columnspan=4)
+domain_entry_frame.grid(sticky=NSEW, columnspan=4, ipady=10, ipadx=10)
 domain_entry_frame.grid_columnconfigure(0, weight=1)
 
 # website field var
@@ -321,7 +321,7 @@ domain = StringVar()
 # set up the label widget and position in grid
 domain_label = Label(
     domain_entry_frame, text="Enter the website url you want to index", font=("normal", 18), bg="#95a5a6")
-domain_label.grid(row=1, sticky=EW, padx=5, pady=5, columnspan=4)
+domain_label.grid(row=1, sticky=W, padx=5, pady=5, columnspan=4)
 
 # website text field
 domain_entry = Entry(domain_entry_frame,
@@ -333,25 +333,30 @@ domain_entry.grid_columnconfigure(0, weight=1)
 
 # set up the frame for crawl options
 crawl_option_frame = Frame(window, width=100, height=100, bg="#7f8c8d")
-crawl_option_frame.grid(row=1, sticky=NSEW, columnspan=4)
+crawl_option_frame.grid(row=1, sticky=NSEW, columnspan=4, ipady=10, ipadx=10)
 crawl_option_frame.grid_columnconfigure(0, weight=1)
+
 # lets store the crawl option
 crawl_option = StringVar()
 
+# define the crawl options
 crawl_options = [
     'single page',
     'navigation links',
     'internal page links',
 ]
 
+# crawl options variable
 crawl_option.set(crawl_options[0])
-# crawl options radio
+
+# crawl options variable label
 options_label = Label(
-    crawl_option_frame, text="refine how you crawl the domain", font=("normal", 14), bg="#7f8c8d")
+    crawl_option_frame, text="Refine how you crawl the domain", font=("normal", 14), bg="#7f8c8d")
 options_label.grid(row=0, sticky=W, padx=5, pady=5)
 
-options_menu = OptionMenu(crawl_option_frame, crawl_option, *
-                          crawl_options, command=show_user_crawl_option)
+# crawl options menu
+options_menu = OptionMenu(crawl_option_frame, crawl_option, *crawl_options,  # command=show_user_crawl_option
+                          )
 options_menu.configure(bg="#7f8c8d")
 options_menu.grid(row=1, padx=5, pady=5, sticky=EW)
 
@@ -365,6 +370,7 @@ crawl_button = Button(crawl_button_frame, text="Get website content",
                       font=14, command=process_user_crawl_request, border=0, pady=10)
 crawl_button.grid(sticky=EW, padx=5, pady=10)
 
+# a frame for the directory dialouge buttons
 dir_buttons_frame = Frame(window, width=100, height=100, bg="#bdc3c7")
 dir_buttons_frame.grid(row=3, sticky=NSEW, columnspan=4)
 dir_buttons_frame.grid_columnconfigure(0, weight=1)
