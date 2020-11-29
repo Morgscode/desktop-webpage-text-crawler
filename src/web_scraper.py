@@ -144,9 +144,10 @@ def extract_and_format_main_content_as_text(html_soup: BeautifulSoup):
 
     for tag in html_soup.find_all(re.compile('^(h[1-6]|p)')):
         tag_text = tag.get_text()
+        tag_text = tag_text.lstrip().rstrip()
 
-        if tag_text not in main_content:
-            main_content.append(tag_text + "\n")
+        if tag_text:
+            main_content.append(tag_text)
 
     main_content_text = "\n".join(main_content)
 

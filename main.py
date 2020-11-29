@@ -1,4 +1,5 @@
 import sys
+import time
 
 import src.bootstrap as bootstrap
 import src.location_handler as location_handler
@@ -76,7 +77,7 @@ def init():
     return res
 
 
-def show_url_crawl_error(target_url):
+def show_url_crawl_error(target_url: str):
     messagebox.showerror(title="oh dear! there was an issue",
                          message="there was a problem when crawling {target_url}... check the logs for information".format(target_url=target_url))
 
@@ -96,7 +97,7 @@ def show_user_content_option(option: str):
     print(content_option.get())
 
 
-def index_webpage_content_by_url(link, index):
+def index_webpage_content_by_url(link: str, index: int):
 
     # let's grab the html response from the server
     page_html = web_scraper.get_webpage_html(link)
@@ -170,7 +171,7 @@ def process_user_crawl_request():
 
             return False
 
-            # convert into beautifulsoup object regardsless of response
+        # convert into beautifulsoup object regardsless of response
         html_soup = web_scraper.convert_html_to_soup_obj(html)
 
         user_crawl_option = crawl_option.get()
@@ -218,6 +219,7 @@ def process_user_crawl_request():
                 for index, link in enumerate(formatted_webpage_links_in_nav):
                     try:
                         index_webpage_content_by_url(link, index + 1)
+                        time.sleep(0.5)
                     except:
                         # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
                         error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT valid\n".format(
@@ -225,6 +227,7 @@ def process_user_crawl_request():
 
                         with open("./web-scraper-logs/error.txt", "a+") as error_file:
                             error_file.write(error)
+                            time.sleep(0.5)
 
                         indexing_errors += 1
 
@@ -278,6 +281,7 @@ def process_user_crawl_request():
                 for index, link in enumerate(formatted_internal_webpage_links):
                     try:
                         index_webpage_content_by_url(link, index + 1)
+                        time.sleep(0.5)
                     except:
                         # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
                         error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT valid\n".format(
@@ -285,6 +289,7 @@ def process_user_crawl_request():
 
                         with open("./web-scraper-logs/error.txt", "a+") as error_file:
                             error_file.write(error)
+                            time.sleep(0.5)
 
                         indexing_errors += 1
                     else:
@@ -322,11 +327,11 @@ def process_user_crawl_request():
 window = Tk()
 
 window.title('Webpage content scraper')
-window.geometry('400x375+250+200')
-window.configure(bg="#bdc3c7")
+window.geometry('375x375+250+200')
+window.configure(bg="#CFD8DC")
 
 # set up the frame for the domain entry widget field
-domain_entry_frame = Frame(window, width=100, height=100, bg="#95a5a6")
+domain_entry_frame = Frame(window, width=100, height=100, bg="#455A64")
 domain_entry_frame.grid(sticky=NSEW, column=0,
                         columnspan=4, ipady=10, ipadx=10)
 domain_entry_frame.grid_columnconfigure(0, weight=1)
@@ -336,19 +341,19 @@ domain = StringVar()
 
 # set up the label widget and position in grid
 domain_label = Label(
-    domain_entry_frame, text="Enter the website url you want to index:", font=("normal", 18), bg="#95a5a6")
+    domain_entry_frame, text="Enter the website url you want to index:", font=("normal", 18), bg="#455A64", fg="#212121")
 domain_label.grid(row=1, sticky=W, padx=5, pady=5, columnspan=4)
 
 # website text field
 domain_entry = Entry(domain_entry_frame,
                      textvariable=domain)
-domain_entry.configure(bg="#ecf0f1", border=0)
+domain_entry.configure(bg="#CFD8DC", border=0)
 domain_entry.grid(row=2, sticky=EW, padx=5, pady=5,
                   ipady=5, ipadx=10,  columnspan=1)
 domain_entry.grid_columnconfigure(0, weight=1)
 
 # set up the frame for crawl options
-crawl_options_frame = Frame(window, width=100, height=100, bg="#7f8c8d")
+crawl_options_frame = Frame(window, width=100, height=100, bg="#607D8B")
 crawl_options_frame.grid(row=1, sticky=NSEW, column=0,
                          columnspan=4, ipady=10, ipadx=10)
 crawl_options_frame.grid_columnconfigure(0, weight=1)
@@ -368,13 +373,13 @@ crawl_option.set(crawl_options[0])
 
 # crawl options variable label
 crawl_option_label = Label(
-    crawl_options_frame, text="Refine how you crawl the domain:", font=("normal", 14), bg="#7f8c8d")
+    crawl_options_frame, text="Refine how you crawl the domain:", font=("normal", 14), bg="#607D8B", fg="#212121")
 crawl_option_label.grid(row=0, sticky=W, padx=5, pady=5)
 
 # crawl options menu
 crawl_option_menu = OptionMenu(crawl_options_frame, crawl_option, *crawl_options,  # command=show_user_crawl_option
                                )
-crawl_option_menu.configure(bg="#7f8c8d")
+crawl_option_menu.configure(bg="#607D8B", fg="#212121")
 crawl_option_menu.grid(row=1, padx=5, pady=5, sticky=EW)
 
 # set a variable for content options
@@ -392,38 +397,41 @@ content_option.set(content_options[0])
 
 # create a label for the content option
 content_option_label = Label(
-    crawl_options_frame, text="Select content to index:", font=("normal", 14), bg="#7f8c8d")
+    crawl_options_frame, text="Select content to index:", font=("normal", 14), bg="#607D8B", fg="#212121")
 content_option_label.grid(row=2, sticky=W, padx=5, pady=5)
 
 # crawl options menu
 content_option_menu = OptionMenu(crawl_options_frame, content_option, *content_options,   command=show_user_content_option
                                  )
-content_option_menu.configure(bg="#7f8c8d")
+content_option_menu.configure(bg="#607D8B", fg="#212121")
 content_option_menu.grid(row=3, padx=5, pady=5, sticky=EW)
 
 # set up the frame for the crawl button
-crawl_button_frame = Frame(window, width=100, height=100, bg="#bdc3c7")
+crawl_button_frame = Frame(window, width=100, height=100, bg="#CFD8DC")
 crawl_button_frame.grid(row=2, sticky=NSEW, column=0, columnspan=4)
 crawl_button_frame.grid_columnconfigure(0, weight=1)
 
 # crawl button
 crawl_button = Button(crawl_button_frame, text="Get website content",
-                      font=14, command=process_user_crawl_request, border=0, pady=10)
+                      font=14, command=process_user_crawl_request)
+crawl_button.configure(border=0, pady=10, fg="#212121", bg="#757575")
 crawl_button.grid(sticky=EW, padx=5, pady=10)
 
 # a frame for the directory dialouge buttons
-dir_buttons_frame = Frame(window, width=100, height=100, bg="#bdc3c7")
+dir_buttons_frame = Frame(window, width=100, height=100, bg="#CFD8DC")
 dir_buttons_frame.grid(row=3, sticky=NSEW, columnspan=4)
 dir_buttons_frame.grid_columnconfigure(0, weight=1)
 
 # data directory button
 data_dir_button = Button(dir_buttons_frame, text="Open data folder",
-                         font=14, command=open_data_dir, padx=5, pady=5)
-data_dir_button.grid(sticky=W, padx=5, pady=5)
+                         font=14, command=open_data_dir)
+data_dir_button.configure(padx=5, pady=5, fg="#212121", bg="#757575")
+data_dir_button.grid(sticky=W, padx=5, pady=10)
 
 # error logs directory button
 error_logs_dir_button = Button(dir_buttons_frame, text="Open logs",
-                               font=14, command=open_logs_dir, padx=5, pady=5)
+                               font=14, command=open_logs_dir, )
+error_logs_dir_button.configure(padx=5, pady=5, fg="#212121", bg="#757575")
 error_logs_dir_button.grid(row=0, padx=5, pady=5)
 
 # run the gui
