@@ -86,6 +86,11 @@ def show_single_page_success():
         title="great success!", message="done scraping! - indexed 1 page... ready for more")
 
 
+def show_user_crawl_option(option: str):
+    # for testing the options button
+    print(crawl_option.get())
+
+
 def index_webpage_content_by_url(link, index):
 
     # let's grab the html response from the server
@@ -117,11 +122,6 @@ def index_webpage_content_by_url(link, index):
     # let's rewrite the cleaned text to the file
     file_handler.write_text_to_file(
         formatted_text, formatted_path, index, parsed_target_url)
-
-
-def show_user_crawl_option(option: str):
-    # for testing the options button
-    print(crawl_option.get())
 
 
 def process_user_crawl_request():
@@ -162,6 +162,7 @@ def process_user_crawl_request():
             try:
                 # if there are no links in a nav, just index the content on that page
                 index_webpage_content_by_url(formatted_target_url, 0)
+                show_single_page_success()
             except:
                 # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
                 error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT indexable as text content\n".format(
@@ -170,9 +171,7 @@ def process_user_crawl_request():
                 with open("./web-scraper-logs/error.txt", "a+") as error_file:
                     error_file.write(error)
 
-                    show_url_crawl_error(formatted_target_url)
-
-            show_single_page_success()
+                show_url_crawl_error(formatted_target_url)
 
             domain_entry.delete(0, 'end')
 
@@ -207,9 +206,9 @@ def process_user_crawl_request():
                                 target_url=link)
 
                         with open("./web-scraper-logs/error.txt", "a+") as error_file:
-
                             error_file.write(error)
-                            indexing_errors += 1
+
+                        indexing_errors += 1
 
                     else:
                         pages_indexed += 1
@@ -223,19 +222,18 @@ def process_user_crawl_request():
                 try:
                     # if there are no links in a nav, just index the content on that page
                     index_webpage_content_by_url(formatted_target_url, 0)
+                    show_single_page_success()
                 except:
                     # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
                     error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT indexable as text content\n".format(
-                            target_url=target_url)
+                            target_url=formatted_target_url)
 
                     with open("./web-scraper-logs/error.txt", "a+") as error_file:
                         error_file.write(error)
 
-                        show_url_crawl_error(formatted_target_url)
+                    show_url_crawl_error(formatted_target_url)
 
                 domain_entry.delete(0, 'end')
-
-                show_single_page_success()
 
         elif user_crawl_option == 'internal page links':
 
@@ -283,6 +281,7 @@ def process_user_crawl_request():
                 try:
                     # if there are no links in a nav, just index the content on that page
                     index_webpage_content_by_url(formatted_target_url, 0)
+                    show_single_page_success()
                 except:
                     # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
                     error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT indexable as text content\n".format(
@@ -291,11 +290,9 @@ def process_user_crawl_request():
                     with open("./web-scraper-logs/error.txt", "a+") as error_file:
                         error_file.write(error)
 
-                        show_url_crawl_error(formatted_target_url)
+                    show_url_crawl_error(formatted_target_url)
 
-                    domain_entry.delete(0, 'end')
-
-                    show_single_page_success()
+                domain_entry.delete(0, 'end')
 
     else:
         # if init() returns false, we've handled it
