@@ -28,8 +28,8 @@ def validate_web_url(url: str):
         # if we dont get a 200 response, the url isn't valid
         if response.status_code != 200:
 
-            raise Exception("Web-scraper error in vaidate_web_url fn...error code: {errcode} error reason is: {errreason}\n".format(
-                errcode=response.status_code, errreason=response.reason))
+            raise Exception("Web-scraper error in vaidate_web_url fn url is {url}...error code: {errcode} error reason is: {errreason}\n".format(url=url,
+                                                                                                                                                 errcode=response.status_code, errreason=response.reason))
 
     except Exception as e:
         # this will catch 404s, 500s etc, we'll write to logs and exit
