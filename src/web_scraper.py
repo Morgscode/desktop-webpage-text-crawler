@@ -7,37 +7,38 @@ from urllib.parse import urlparse
 from http.client import HTTPResponse
 from bs4 import BeautifulSoup
 
+import requests
+
 
 def get_webpage_html(url: str):
-    if url != "/":
-        try:
-            # lets request the webpage html content
-            html = urlopen(url)
-        except HTTPError as e:
-            print(e)
-            # if it fails, let's encode our error as a string and write it to the logs
-            error = "Web-scraper error in get_webpage_page_html fn... error code is: {errcode}; error reason is: {errreason} at url: {url}\n".format(
-                errcode=e.code, errreason=e.reason, url=url)
 
-            with open("./web-scraper-logs/error.txt", "a+") as error_file:
-                error_file.write(error)
+    # lets request the webpage html content
+    html = requests.get(url)
 
-            return false
-        else:
-            return html
+    try:
+        if html.status_code != 200:
+            raise Exception("Web-scraper error in get_webpage_page_html fn... error code is: {errcode}; error reason is: {errreason} at url: {url}\n".format(
+                errcode=html.status_code, errreason=html.reason, url=url))
+
+        # regardsless of result, we return the http response
+        return html
+    except Exception as e:
+
+        with open("./web-scraper-logs/error.txt", "a+") as error_file:
+            error_file.write(str(e))
+
+        # regardsless of result, we return the http response
+        return html
 
 
-def convert_html_to_soup_obj(html: HTTPResponse):
-    if not html is None:
-        # lets store the html as a utf-8 encoded string
-        html_string = html.read().decode('utf-8')
+def convert_html_to_soup_obj(html: requests.Response):
+    # lets store the html as a utf-8 encoded string
+    html_string = html.text
 
-        # let's parse the html into an object with BeautifulSoup
-        html_soup = BeautifulSoup(html_string, 'html.parser')
+    # let's parse the html into an object with BeautifulSoup
+    html_soup = BeautifulSoup(html_string, 'html.parser')
 
-        return html_soup
-    else:
-        return False
+    return html_soup
 
 
 def get_valid_webpage_link_hrefs_in_navs(html: BeautifulSoup):
