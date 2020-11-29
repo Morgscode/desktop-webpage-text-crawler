@@ -127,6 +127,34 @@ def get_internal_links_from_webpage(html: BeautifulSoup, target_url: str):
     return valid_internal_links
 
 
+def extract_page_title_as_text(html_soup: BeautifulSoup):
+    # let's extract the pages <title> tag with BeautifulSoup
+    html_page_title = html_soup.head.title.string
+    return html_page_title + "\n"
+
+
+def extract_body_content_as_text(html_soup: BeautifulSoup):
+    # let's extract the text from the <body> with BeautifulSoup
+    html_body_text_content = html_soup.body.get_text()
+    return html_body_text_content + "\n"
+
+
+def extract_and_format_main_content_as_text(html_soup: BeautifulSoup):
+    main_content = []
+
+    for tag in html_soup.find_all(re.compile('^(h[1-6]|p)')):
+        tag_text = tag.get_text()
+
+        if tag_text not in main_content:
+            main_content.append(tag_text + "\n")
+
+    main_content_text = "\n".join(main_content)
+
+    print(main_content_text)
+
+    return main_content_text
+
+
 def convert_soup_to_text(html_soup: BeautifulSoup):
     # let's extract the text with BeautifulSoup
     html_text_content = html_soup.get_text()

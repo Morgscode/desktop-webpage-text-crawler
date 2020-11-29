@@ -119,6 +119,11 @@ def index_webpage_content_by_url(link, index):
         formatted_text, formatted_path, index, parsed_target_url)
 
 
+def show_user_crawl_option(option: str):
+    # for testing the options button
+    print(crawl_option.get())
+
+
 def process_user_crawl_request():
 
     ###
@@ -171,7 +176,7 @@ def process_user_crawl_request():
 
             domain_entry.delete(0, 'end')
 
-        elif user_crawl_option == 'internal nav links':
+        elif user_crawl_option == 'navigation links':
 
             # let's extract the links in the nav element
             webpage_links_in_navs = web_scraper.get_valid_webpage_link_hrefs_in_navs(
@@ -302,46 +307,77 @@ def process_user_crawl_request():
 window = Tk()
 
 window.title('Webpage content scraper')
-window.geometry('450x300+250+200')
+window.geometry('400x275+250+200')
+window.configure(bg="#bdc3c7")
 
-# website field label
+# set up the frame for the domain entry widget field
+domain_entry_frame = Frame(window, width=100, height=100, bg="#95a5a6")
+domain_entry_frame.grid(sticky=NSEW, columnspan=4)
+domain_entry_frame.grid_columnconfigure(0, weight=1)
+
+# website field var
 domain = StringVar()
+
+# set up the label widget and position in grid
 domain_label = Label(
-    window, text="Enter the website url you want to index", font=("normal", 18))
-domain_label.grid(row=1, sticky=W, padx=3, pady=5)
+    domain_entry_frame, text="Enter the website url you want to index", font=("normal", 18), bg="#95a5a6")
+domain_label.grid(row=1, sticky=EW, padx=5, pady=5, columnspan=4)
 
 # website text field
-domain_entry = Entry(window, textvariable=domain)
-domain_entry.grid(row=2, sticky=W, padx=5, pady=5, ipady=5)
+domain_entry = Entry(domain_entry_frame,
+                     textvariable=domain)
+domain_entry.configure(bg="#ecf0f1", border=0)
+domain_entry.grid(row=2, sticky=EW, padx=5, pady=5,
+                  ipady=5, ipadx=10,  columnspan=1)
+domain_entry.grid_columnconfigure(0, weight=1)
 
+# set up the frame for crawl options
+crawl_option_frame = Frame(window, width=100, height=100, bg="#7f8c8d")
+crawl_option_frame.grid(row=1, sticky=NSEW, columnspan=4)
+crawl_option_frame.grid_columnconfigure(0, weight=1)
 # lets store the crawl option
 crawl_option = StringVar()
-crawl_option.set('internal nav links')
+
+crawl_options = [
+    'single page',
+    'navigation links',
+    'internal page links',
+]
+
+crawl_option.set(crawl_options[0])
 # crawl options radio
 options_label = Label(
-    window, text="refine how you crawl the domain", font=("normal", 14))
-options_label.grid(row=3, sticky=W, padx=3, pady=5)
+    crawl_option_frame, text="refine how you crawl the domain", font=("normal", 14), bg="#7f8c8d")
+options_label.grid(row=0, sticky=W, padx=5, pady=5)
 
-options_menu = OptionMenu(window, crawl_option, 'single page',
-                          'internal page links', 'internal nav links')
-options_menu.grid(row=4, sticky=W, padx=3, pady=5)
+options_menu = OptionMenu(crawl_option_frame, crawl_option, *
+                          crawl_options, command=show_user_crawl_option)
+options_menu.configure(bg="#7f8c8d")
+options_menu.grid(row=1, padx=5, pady=5, sticky=EW)
+
+# set up the frame for the crawl button
+crawl_button_frame = Frame(window, width=100, height=100, bg="#bdc3c7")
+crawl_button_frame.grid(row=2, sticky=NSEW, columnspan=4)
+crawl_button_frame.grid_columnconfigure(0, weight=1)
 
 # crawl button
-crawl_button = Button(window, text="Get website content",
-                      font=14, command=process_user_crawl_request)
-crawl_button.grid(row=5, sticky=W,  padx=5, pady=10)
+crawl_button = Button(crawl_button_frame, text="Get website content",
+                      font=14, command=process_user_crawl_request, border=0, pady=10)
+crawl_button.grid(sticky=EW, padx=5, pady=10)
+
+dir_buttons_frame = Frame(window, width=100, height=100, bg="#bdc3c7")
+dir_buttons_frame.grid(row=3, sticky=NSEW, columnspan=4)
+dir_buttons_frame.grid_columnconfigure(0, weight=1)
 
 # data directory button
-data_dir_button = Button(window, text="Open data folder",
-                         font=14, command=open_data_dir)
-
-data_dir_button.grid(row=6, sticky=W, padx=5, pady=10)
+data_dir_button = Button(dir_buttons_frame, text="Open data folder",
+                         font=14, command=open_data_dir, padx=5, pady=5)
+data_dir_button.grid(sticky=W, padx=5, pady=5)
 
 # error logs directory button
-error_logs_dir_button = Button(window, text="Open logs",
-                               font=14, command=open_logs_dir)
-
-error_logs_dir_button.grid(row=6, padx=5, pady=10)
+error_logs_dir_button = Button(dir_buttons_frame, text="Open logs",
+                               font=14, command=open_logs_dir, padx=5, pady=5)
+error_logs_dir_button.grid(row=0, padx=5, pady=5)
 
 # run the gui
 window.mainloop()
