@@ -39,7 +39,6 @@ def validate_domain_or_fail(url: str):
 
 
 def open_data_dir():
-
     is_dir = bootstrap.dir_exists("./web-scraper-data")
 
     if is_dir:
@@ -51,7 +50,6 @@ def open_data_dir():
 
 
 def open_logs_dir():
-
     is_dir = bootstrap.dir_exists("./web-scraper-logs")
 
     if is_dir:
