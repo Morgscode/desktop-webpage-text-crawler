@@ -165,7 +165,7 @@ def process_user_crawl_request():
                 with open("./web-scraper-logs/error.txt", "a+") as error_file:
                     error_file.write(error)
 
-                    show_url_crawl_error(target_url)
+                    show_url_crawl_error(formatted_target_url)
 
             show_single_page_success()
 
@@ -217,7 +217,7 @@ def process_user_crawl_request():
             else:
                 try:
                     # if there are no links in a nav, just index the content on that page
-                    index_webpage_content_by_url(target_url, 0)
+                    index_webpage_content_by_url(formatted_target_url, 0)
                 except:
                     # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
                     error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT indexable as text content\n".format(
@@ -226,7 +226,7 @@ def process_user_crawl_request():
                     with open("./web-scraper-logs/error.txt", "a+") as error_file:
                         error_file.write(error)
 
-                        show_url_crawl_error(target_url)
+                        show_url_crawl_error(formatted_target_url)
 
                 domain_entry.delete(0, 'end')
 
@@ -277,16 +277,16 @@ def process_user_crawl_request():
             else:
                 try:
                     # if there are no links in a nav, just index the content on that page
-                    index_webpage_content_by_url(target_url, 0)
+                    index_webpage_content_by_url(formatted_target_url, 0)
                 except:
                     # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
                     error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT indexable as text content\n".format(
-                        target_url=target_url)
+                        target_url=formatted_target_url)
 
                     with open("./web-scraper-logs/error.txt", "a+") as error_file:
                         error_file.write(error)
 
-                        show_url_crawl_error(target_url)
+                        show_url_crawl_error(formatted_target_url)
 
                     domain_entry.delete(0, 'end')
 

@@ -1,10 +1,7 @@
 import sys
 import re
 
-from urllib.request import urlopen
-from urllib.error import HTTPError
 from urllib.parse import urlparse
-from http.client import HTTPResponse
 from bs4 import BeautifulSoup
 
 import requests
