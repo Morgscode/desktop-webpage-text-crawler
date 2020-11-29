@@ -91,6 +91,11 @@ def show_user_crawl_option(option: str):
     print(crawl_option.get())
 
 
+def show_user_content_option(option: str):
+    # for testing the options button
+    print(content_option.get())
+
+
 def index_webpage_content_by_url(link, index):
 
     # let's grab the html response from the server
@@ -100,9 +105,22 @@ def index_webpage_content_by_url(link, index):
     page_html_soup = web_scraper.convert_html_to_soup_obj(
         page_html)
 
-    # extract the text from this page
-    page_html_text_content = web_scraper.convert_soup_to_text(
-        page_html_soup)
+    user_content_option = content_option.get()
+
+    if user_content_option == 'page title':
+        # extract the page title
+        page_html_text_content = web_scraper.extract_page_title_as_text(
+            page_html_soup)
+
+    elif user_content_option == 'main content':
+        # extract the page's main content
+        page_html_text_content = web_scraper.extract_and_format_main_content_as_text(
+            page_html_soup)
+
+    elif user_content_option == 'all content':
+        # extract the text from this page
+        page_html_text_content = web_scraper.convert_soup_to_text(
+            page_html_soup)
 
     # let's generate a formatted path for this webpage
     formatted_path = location_handler.format_path_as_file_location(link)
@@ -309,7 +327,8 @@ window.configure(bg="#bdc3c7")
 
 # set up the frame for the domain entry widget field
 domain_entry_frame = Frame(window, width=100, height=100, bg="#95a5a6")
-domain_entry_frame.grid(sticky=NSEW, columnspan=4, ipady=10, ipadx=10)
+domain_entry_frame.grid(sticky=NSEW, column=0,
+                        columnspan=4, ipady=10, ipadx=10)
 domain_entry_frame.grid_columnconfigure(0, weight=1)
 
 # website field var
@@ -317,7 +336,7 @@ domain = StringVar()
 
 # set up the label widget and position in grid
 domain_label = Label(
-    domain_entry_frame, text="Enter the website url you want to index", font=("normal", 18), bg="#95a5a6")
+    domain_entry_frame, text="Enter the website url you want to index:", font=("normal", 18), bg="#95a5a6")
 domain_label.grid(row=1, sticky=W, padx=5, pady=5, columnspan=4)
 
 # website text field
@@ -329,9 +348,10 @@ domain_entry.grid(row=2, sticky=EW, padx=5, pady=5,
 domain_entry.grid_columnconfigure(0, weight=1)
 
 # set up the frame for crawl options
-crawl_option_frame = Frame(window, width=100, height=100, bg="#7f8c8d")
-crawl_option_frame.grid(row=1, sticky=NSEW, columnspan=4, ipady=10, ipadx=10)
-crawl_option_frame.grid_columnconfigure(0, weight=1)
+crawl_options_frame = Frame(window, width=100, height=100, bg="#7f8c8d")
+crawl_options_frame.grid(row=1, sticky=NSEW, column=0,
+                         columnspan=4, ipady=10, ipadx=10)
+crawl_options_frame.grid_columnconfigure(0, weight=1)
 
 # lets store the crawl option
 crawl_option = StringVar()
@@ -347,19 +367,43 @@ crawl_options = [
 crawl_option.set(crawl_options[0])
 
 # crawl options variable label
-options_label = Label(
-    crawl_option_frame, text="Refine how you crawl the domain", font=("normal", 14), bg="#7f8c8d")
-options_label.grid(row=0, sticky=W, padx=5, pady=5)
+crawl_option_label = Label(
+    crawl_options_frame, text="Refine how you crawl the domain:", font=("normal", 14), bg="#7f8c8d")
+crawl_option_label.grid(row=0, sticky=W, padx=5, pady=5)
 
 # crawl options menu
-options_menu = OptionMenu(crawl_option_frame, crawl_option, *crawl_options,  # command=show_user_crawl_option
-                          )
-options_menu.configure(bg="#7f8c8d")
-options_menu.grid(row=1, padx=5, pady=5, sticky=EW)
+crawl_option_menu = OptionMenu(crawl_options_frame, crawl_option, *crawl_options,  # command=show_user_crawl_option
+                               )
+crawl_option_menu.configure(bg="#7f8c8d")
+crawl_option_menu.grid(row=1, padx=5, pady=5, sticky=EW)
+
+# set a variable for content options
+content_option = StringVar()
+
+# define the content options
+content_options = [
+    'main content',
+    'all content',
+    'page title',
+]
+
+# crawl options variable
+content_option.set(content_options[0])
+
+# create a label for the content option
+content_option_label = Label(
+    crawl_options_frame, text="Select content to index:", font=("normal", 14), bg="#7f8c8d")
+content_option_label.grid(row=2, sticky=W, padx=5, pady=5)
+
+# crawl options menu
+content_option_menu = OptionMenu(crawl_options_frame, content_option, *content_options,   command=show_user_content_option
+                                 )
+content_option_menu.configure(bg="#7f8c8d")
+content_option_menu.grid(row=3, padx=5, pady=5, sticky=EW)
 
 # set up the frame for the crawl button
 crawl_button_frame = Frame(window, width=100, height=100, bg="#bdc3c7")
-crawl_button_frame.grid(row=2, sticky=NSEW, columnspan=4)
+crawl_button_frame.grid(row=2, sticky=NSEW, column=0, columnspan=4)
 crawl_button_frame.grid_columnconfigure(0, weight=1)
 
 # crawl button

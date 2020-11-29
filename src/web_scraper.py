@@ -150,8 +150,6 @@ def extract_and_format_main_content_as_text(html_soup: BeautifulSoup):
 
     main_content_text = "\n".join(main_content)
 
-    print(main_content_text)
-
     return main_content_text
 
 
