@@ -86,10 +86,10 @@ def format_href_as_url(href: str, target_domain: str):
 
         mo = href_regexp.match(href)
 
+        # we'll only return valid matchs from now on
         if mo:
             # let's asses for hrefs starting with either a www. or no scheme
             if mo.group() and re.match(r'www.', mo.group()) or mo.group() and not re.match(r'https?://', mo.group()):
-
                 # if there wasn't shceme found
                 href = "{scheme}://{href}".format(
                     scheme=parsed_target_domain.scheme, href=href)
