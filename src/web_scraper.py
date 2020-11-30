@@ -119,17 +119,14 @@ def get_internal_links_from_webpage(html: BeautifulSoup, target_url: str):
                         # lets push it to our valid internal links
                         valid_internal_links.append(link_href)
 
-    else:
-        # if no links were found on the page, bail!
-        return False
-
-    # if there were links found on the page, lets return them
+    # we'll return either an empty or filled list
     return valid_internal_links
 
 
 def assess_content_type_for_text_or_json(response: requests.Response):
 
     try:
+        # let's define a regexp to pick up json and text content types
         response_regexp = re.compile(r'^(text/html|application/json)')
 
         content_type = response.headers['Content-Type']
@@ -137,13 +134,14 @@ def assess_content_type_for_text_or_json(response: requests.Response):
         mo = response_regexp.match(content_type)
 
         if mo and mo.group(0):
+            # a mo group means a match
             return True
         else:
             raise Exception("Web-scraper error in assess_content_type fn... The content type: {contenttype} is not text or json".format(
                 contenttype=content_type))
 
     except Exception as e:
-
+        # lets write some info to the logs
         with open("./web-scraper-logs/error.txt", "a+") as error_file:
             error_file.write(str(e))
 
