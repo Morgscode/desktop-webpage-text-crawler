@@ -157,7 +157,18 @@ def process_user_crawl_request():
     # user some feedback... this maintains the ux
     # if errors do occur...
     # errors WILL be written to the logs
-    # error messages MAY be displayed to the user
+    # error messages WILL be displayed to the user
+    ###
+
+    ###
+    # indexing all webpage links
+    # in a nav or on the page can
+    # turn into a really expensive
+    # function.
+    # so we introduce a 1 second
+    # crawl delay in those loops.
+    # This benefits us, and the
+    # domain's server
     ###
 
     has_initialized = init()
@@ -185,7 +196,6 @@ def process_user_crawl_request():
         if user_crawl_option == 'single page':
 
             try:
-                # if there are no links in a nav, just index the content on that page
                 index_webpage_content_by_url(formatted_target_url, 0)
                 show_single_page_success()
             except:
@@ -196,8 +206,10 @@ def process_user_crawl_request():
                 with open("./web-scraper-logs/error.txt", "a+") as error_file:
                     error_file.write(error)
 
+                # show the user an error message for single page indexing blocks
                 show_url_crawl_error(formatted_target_url)
 
+            # once we're done, clear the form entry
             domain_entry.delete(0, 'end')
 
         elif user_crawl_option == 'navigation links':
@@ -206,16 +218,19 @@ def process_user_crawl_request():
             webpage_links_in_navs = web_scraper.get_valid_webpage_link_hrefs_in_navs(
                 html_soup)
 
+            # let's create an empty list to collect formatted hrefs
             formatted_webpage_links_in_nav = []
 
+            # let's loop over our unformatted hrefs
             for webpage_link_href in webpage_links_in_navs:
+
+                # format or return None
                 webpage_link_href = location_handler.format_href_as_url(
                     webpage_link_href, formatted_target_url)
                 formatted_webpage_links_in_nav.append(webpage_link_href)
 
             if len(formatted_webpage_links_in_nav) > 0:
-                # we'll use enumerate to generate an scope specific index
-                # this is used in the write file functions
+                # these counters are used in the write file feedback
                 pages_indexed = 0
                 indexing_errors = 0
 
@@ -223,9 +238,11 @@ def process_user_crawl_request():
                 index_webpage_content_by_url(formatted_target_url, 0)
 
                 for index, link in enumerate(formatted_webpage_links_in_nav):
+                    # we'll use enumerate to generate an scope specific index
                     try:
                         index_webpage_content_by_url(link, index + 1)
-                        time.sleep(0.5)
+                        # lets sleep for a second to introduce a crawl delay
+                        time.sleep(1)
                     except:
                         # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
                         error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT valid\n".format(
@@ -233,15 +250,18 @@ def process_user_crawl_request():
 
                         with open("./web-scraper-logs/error.txt", "a+") as error_file:
                             error_file.write(error)
-                            time.sleep(0.5)
+                            # lets sleep for a second to introduce a crawl delay
+                            time.sleep(1)
 
                         indexing_errors += 1
 
                     else:
+                        # if the try block carried: add 1 to our index coutner
                         pages_indexed += 1
 
                 domain_entry.delete(0, 'end')
 
+                # give the user some feedback
                 messagebox.showinfo(title="great success!", message="done scraping! - crawled {crwl_pg_count} pages, indexed {ind_pg_count} pages with {error_count} errors... ready for more".format(
                     crwl_pg_count=len(formatted_webpage_links_in_nav), ind_pg_count=pages_indexed, error_count=indexing_errors))
 
@@ -287,7 +307,8 @@ def process_user_crawl_request():
                 for index, link in enumerate(formatted_internal_webpage_links):
                     try:
                         index_webpage_content_by_url(link, index + 1)
-                        time.sleep(0.5)
+                        # lets sleep for a second to introduce a crawl delay
+                        time.sleep(1)
                     except:
                         # this will catch invalid links which aren't yet filtered, we'll write to logs and allow the program to continure
                         error = "Web-scraper error in main.py: index_webpage_content_by_url fn...the domain: {target_url} is NOT valid\n".format(
@@ -295,7 +316,8 @@ def process_user_crawl_request():
 
                         with open("./web-scraper-logs/error.txt", "a+") as error_file:
                             error_file.write(error)
-                            time.sleep(0.5)
+                            # lets sleep for a second to introduce a crawl delay
+                            time.sleep(1)
 
                         indexing_errors += 1
                     else:
