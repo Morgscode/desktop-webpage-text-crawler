@@ -127,6 +127,29 @@ def get_internal_links_from_webpage(html: BeautifulSoup, target_url: str):
     return valid_internal_links
 
 
+def assess_content_type_for_text_or_json(response: requests.Response):
+
+    try:
+        response_regexp = re.compile(r'^(text/html|application/json)')
+
+        content_type = response.headers['Content-Type']
+
+        mo = response_regexp.match(content_type)
+
+        if mo and mo.group(0):
+            return True
+        else:
+            raise Exception("Web-scraper error in assess_content_type fn... The content type: {contenttype} is not text or json".format(
+                contenttype=content_type))
+
+    except Exception as e:
+
+        with open("./web-scraper-logs/error.txt", "a+") as error_file:
+            error_file.write(str(e))
+
+        return False
+
+
 def extract_page_title_as_text(html_soup: BeautifulSoup):
     # let's extract the pages <title> tag with BeautifulSoup
     html_page_title = html_soup.head.title.string

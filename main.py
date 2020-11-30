@@ -102,6 +102,12 @@ def index_webpage_content_by_url(link: str, index: int):
     # let's grab the html response from the server
     page_html = web_scraper.get_webpage_html(link)
 
+    response_is_text_or_json = web_scraper.assess_content_type_for_text_or_json(
+        page_html)
+
+    if not response_is_text_or_json:
+        return False
+
     # let's conver it to some tasty soup
     page_html_soup = web_scraper.convert_html_to_soup_obj(
         page_html)
@@ -327,7 +333,7 @@ def process_user_crawl_request():
 window = Tk()
 
 window.title('Webpage content scraper')
-window.geometry('375x375+250+200')
+window.geometry('450x450+250+200')
 window.configure(bg="#CFD8DC")
 
 # set up the frame for the domain entry widget field
