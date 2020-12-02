@@ -97,10 +97,13 @@ def get_internal_links_from_webpage(html: BeautifulSoup, target_url: str):
                 if target_domain.startswith('www.'):
                     target_domain = target_domain[4:]
 
-                # we need a regexp to search for strings that contain
-                # either 1) target domain 2) a "/{path}"
+                # we need a regexp to search
+                # for strings that contain:
+                # 1) the target domain
+                # OR
+                # 2) a "/{path}"
                 internal_link_regexp = re.compile(
-                    r'(^/|https?://(www.)?{domain})'.format(domain=target_domain))
+                    r'^/[a-zA-z]+[0-9]*|https?://(www.)?{domain}'.format(domain=target_domain))
 
                 mo = internal_link_regexp.match(link_href)
 
@@ -116,7 +119,8 @@ def get_internal_links_from_webpage(html: BeautifulSoup, target_url: str):
                     # if there is no match object, the href isn't a pdf link
                     if mo is None:
 
-                        # lets push it to our valid internal links
+                        # if its passed all our tests...
+                        # push it to valid internal links list
                         valid_internal_links.append(link_href)
 
     # we'll return either an empty or filled list

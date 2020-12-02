@@ -106,6 +106,8 @@ def index_webpage_content_by_url(link: str, index: int):
         page_html)
 
     if not response_is_text_or_json:
+        # we dont really want to index anything that
+        # isn't plain text or json
         return False
 
     # let's conver it to some tasty soup
@@ -256,7 +258,7 @@ def process_user_crawl_request():
                         indexing_errors += 1
 
                     else:
-                        # if the try block carried: add 1 to our index coutner
+                        # if the try block carried: add 1 to our index counter
                         pages_indexed += 1
 
                 domain_entry.delete(0, 'end')
